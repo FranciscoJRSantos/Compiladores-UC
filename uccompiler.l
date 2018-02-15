@@ -15,9 +15,9 @@ CHARLIT             {CHARACTERS}|{ESCAPE}|\_
 INVALID             ({CHARACTERS}|{ESCAPE}|{SPACE}|\/)+
 INTLIT              {NUMBERS}+ 
 EXPOENTE            ("e"|"E")(("+"|"-"))?
-ID                  "_"?{CHARACTERS}({CHARACTERS}|{NUMBERS})*
+ID                  ("_"|{CHARACTERS})+({CHARACTERS}|{NUMBERS}|\_)*
 REALLIT             ({INTLIT}"."{INTLIT})|({INTLIT}"."{INTLIT}{EXPOENTE}{INTLIT})|({INTLIT}{EXPOENTE}{INTLIT})
-RESERVED            "auto"|"break"|"case"|"const"|"continue"|"default"|"do"|"enum"|"extern"|"for"|"goto"|"inline"|"long"|"register"|"register"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"volatile"|"_Bool"|"_Imaginary"|"++"|"--"
+RESERVED            "auto"|"break"|"case"|"const"|"continue"|"default"|"do"|"enum"|"extern"|"float"|"for"|"goto"|"inline"|"long"|"register"|"restrict"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"volatile"|"_Bool"|"_Imaginary"|"++"|"--"|"["|"]"
 
 %{
 #include <stdio.h>
@@ -40,8 +40,8 @@ void print_content(char * text, char * content);
 
 %%
 
-"/*"                                            { comment(); }
-"//"[^\n]*                                      { /* skip line */}
+"/*"                                            { count(); comment(); }
+"//"[^\n]*                                      { count(); }
 
 "char"                                          { count(); print_text("CHAR"); }
 "else"                                          { count(); print_text("ELSE"); }
@@ -74,18 +74,19 @@ void print_content(char * text, char * content);
 "||"                                            { count(); print_text("OR"); }
 "+"                                             { count(); print_text("PLUS");  }
 "}"                                             { count(); print_text("RBRACE"); }
-")"                                             { count(); print_text("RPAIR");  }
+")"                                             { count(); print_text("RPAR");  }
 ";"                                             { count(); print_text("SEMI"); }
+{RESERVED}                                      { count(); print_content("RESERVED", yytext); }
 
 {TAB}                                           { count(); }
 {SPACE}                                         { count(); }
 {NEWLINE}                                       { count(); }
 {LINETERMINATOR}                                { count(); }
-{RESERVED}                                      { count(); print_content("RESERVED", yytext); }
+
+{ID}                                            { count(); print_content("ID",yytext); }
 {INTLIT}                                        { count(); print_content("INTLIT",yytext); }
 {REALLIT}                                       { count(); print_content("REALLIT",yytext); }
 {SINGLESPLIT}{CHARLIT}{SINGLESPLIT}             { count(); print_content("CHARLIT",yytext); }
-{ID}                                            { count(); print_content("ID",yytext); }
 
 {SINGLESPLIT}                                   { yymore(); BEGIN CHARACTERLIT; curr_column = column; curr_line = line; count(); }
 <CHARACTERLIT>{INVALID}+                        { count(); yymore(); }
@@ -108,7 +109,6 @@ void count(void)
       column += 8 - (column % 8);
     else
       column++;
-
 }
 
 void print_text(char* text)
@@ -129,8 +129,10 @@ void comment()
 
   while ((current = input()) != 0)
   {
-      if(current == '/' && prev == '*')
+      count();
+      if(current == '/' && prev == '*'){
           return;
+      }
       prev = current;
   }
   printf("Line %d, col %d: unterminated comment\n",line,column);
