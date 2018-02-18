@@ -9,15 +9,15 @@ CARRIAGERETURN      "\r"
 TAB                 "\t"
 SPACE               " "
 SINGLESPLIT         \'
-ESCAPE              \\r|\\n|\\f|\"|\\t|\\{O}{3}
+ESCAPE              \\n|\"|\\t|\\{O}{3}|"\\"|\\"|\\'
 LINETERMINATOR      \\n|"\r\n"
-CHARLIT             {CHARACTERS}|{ESCAPE}|\_
+CHARLIT             {CHARACTERS}|{ESCAPE}|\_|{SPACE}
 INVALID             ({CHARACTERS}|{ESCAPE}|{SPACE}|\/)+
 INTLIT              {NUMBERS}+ 
 EXPOENTE            ("e"|"E")(("+"|"-"))?
-ID                  ("_"|{CHARACTERS})+({CHARACTERS}|{NUMBERS}|\_)*
+ID                  ("_"|{CHARACTERS})+({CHARACTERS}|{NUMBERS}|"_")*
 REALLIT             ({INTLIT}"."{INTLIT})|({INTLIT}"."{INTLIT}{EXPOENTE}{INTLIT})|({INTLIT}{EXPOENTE}{INTLIT})
-RESERVED            "auto"|"break"|"case"|"const"|"continue"|"default"|"do"|"enum"|"extern"|"float"|"for"|"goto"|"inline"|"long"|"register"|"restrict"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"volatile"|"_Bool"|"_Imaginary"|"++"|"--"|"["|"]"
+RESERVED            "auto"|"break"|"case"|"const"|"continue"|"default"|"do"|"enum"|"extern"|"float"|"for"|"goto"|"inline"|"long"|"register"|"restrict"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"volatile"|"_Bool"|"_Imaginary"|"_Complex"|"++"|"--"|"["|"]"
 
 %{
 #include <stdio.h>
@@ -28,6 +28,7 @@ int curr_column = 1;
 int line = 1;
 int curr_line = 1;
 int flag = 0;
+int error = 0;
 
 void count(void);
 void comment();
@@ -36,12 +37,11 @@ void print_text(char * text);
 void print_content(char * text, char * content);
 %}
 
-%X CHARACTERLIT LINECOMMENT 
+%X CHARACTERLIT MULTILINECOMMENT
 
 %%
-
-"/*"                                            { count(); comment(); }
-"//"[^\n]*                                      { count(); }
+"/*"                                            { comment(); }
+"//".*                                          { count();}
 
 "char"                                          { count(); print_text("CHAR"); }
 "else"                                          { count(); print_text("ELSE"); }
@@ -86,41 +86,45 @@ void print_content(char * text, char * content);
 {ID}                                            { count(); print_content("ID",yytext); }
 {INTLIT}                                        { count(); print_content("INTLIT",yytext); }
 {REALLIT}                                       { count(); print_content("REALLIT",yytext); }
-{SINGLESPLIT}{CHARLIT}{SINGLESPLIT}             { count(); print_content("CHARLIT",yytext); }
 
 {SINGLESPLIT}                                   { yymore(); BEGIN CHARACTERLIT; curr_column = column; curr_line = line; count(); }
-<CHARACTERLIT>{INVALID}+                        { count(); yymore(); }
-<CHARACTERLIT>{LINETERMINATOR}                  { BEGIN 0; printf("Line: %d, col %d: unterminated char constant\n",line,column); count(); }
-<CHARACTERLIT>{SINGLESPLIT}                     { BEGIN 0; printf("Line: %d, col %d: invalid char constant (%s)\n",line,column,yytext); count(); }
+<CHARACTERLIT>{CHARLIT}                         { count(); yymore(); }
+<CHARACTERLIT>\\(.?)                            { printf("Line: %d, col %d: invalid char constant(%s)\n",curr_line,curr_column,yytext); count(); error = 1; }
+<CHARACTERLIT>{LINETERMINATOR}                  { BEGIN 0; printf("Line: %d, col %d: unterminated char constant\n",curr_line,curr_column); count(); error = 1; }
+<CHARACTERLIT>{SINGLESPLIT}                     { BEGIN 0; if(error == 0){print_content("CHARLIT",yytext);} count(); }
 <CHARACTERLIT><<EOF>>                           { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); count(); }
-.                                               { printf("Line %d, col %d: illegal character (%s)\n",line,column,yytext); count();}
+.                                               { printf("Line %d, col %d: illegal character (%s)\n",line,column,yytext); count(); }
+
 %%
 
 void count(void)
 {
   int i;
 
-  for (i = 0; yytext[i] != '\0'; i++)
+  for (i = 0; yytext[i] != '\0'; i++){
+
     if (yytext[i] == '\n'){
       column = 1;
       line++;
     }
-    else if (yytext[i] == '\t')
-      column += 8 - (column % 8);
-    else
-      column++;
+    else{
+      column+=yyleng;
+    }
+  }
 }
 
 void print_text(char* text)
 {
-  if (flag == 1)
+  if (flag == 1){
     printf("%s\n",text);
+  }
 }
 
 void print_content(char* text, char* content)
 {
-  if (flag == 1)
+  if (flag == 1){
     printf("%s(%s)\n",text,content);
+  }
 }
 
 void comment()
@@ -129,11 +133,15 @@ void comment()
 
   while ((current = input()) != 0)
   {
-      count();
-      if(current == '/' && prev == '*'){
-          return;
-      }
-      prev = current;
+    if(current == '\n'){
+      line++;
+      column = 1;
+    }
+    else if(current == '/' && prev == '*'){
+      return;
+    }
+    column+=yyleng;
+    prev = current;
   }
   printf("Line %d, col %d: unterminated comment\n",line,column);
 }
