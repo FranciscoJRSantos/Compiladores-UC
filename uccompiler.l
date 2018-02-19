@@ -1,117 +1,105 @@
-O                   [1-7]?
+O                   [0-7]{1,3}
 CHARACTERS          [a-zA-Z]
 UPPERCASE           [a-z]
 LOWERCASE           [A-Z]
 NUMBERS             [0-9]
-ESCNUMBERS          [1-7]
-NEWLINE             "\n"
-CARRIAGERETURN      "\r"
 TAB                 "\t"
 SPACE               " "
 SINGLESPLIT         \'
-ESCAPE              \\n|\"|\\t|\\{O}{3}|"\\"|\\"|\\'
-LINETERMINATOR      \\n|"\r\n"
-CHARLIT             {CHARACTERS}|{ESCAPE}|\_|{SPACE}
-INVALID             ({CHARACTERS}|{ESCAPE}|{SPACE}|\/)+
+LINETERMINATOR      "\n"|"\r\n"|"\r"
+ESCAPE              \\n|\\\"|\\t|\\{O}|\\\\|\\\'|\"
+CHARLIT             [^\r\n\']|{ESCAPE}
 INTLIT              {NUMBERS}+ 
-EXPOENTE            ("e"|"E")(("+"|"-"))?
 ID                  ("_"|{CHARACTERS})+({CHARACTERS}|{NUMBERS}|"_")*
-REALLIT             ({INTLIT}"."{INTLIT})|({INTLIT}"."{INTLIT}{EXPOENTE}{INTLIT})|({INTLIT}{EXPOENTE}{INTLIT})
+EXPOENTE            ("e"|"E")(("+"|"-"))?
+RL1                 ({INTLIT}?"."{INTLIT})
+RL2                 ({INTLIT}"."{INTLIT}?)
+REALLIT             ({RL1}|{RL2})({EXPOENTE}{INTLIT})|({INTLIT}{EXPOENTE}{INTLIT})|({RL1}|{RL2})
 RESERVED            "auto"|"break"|"case"|"const"|"continue"|"default"|"do"|"enum"|"extern"|"float"|"for"|"goto"|"inline"|"long"|"register"|"restrict"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"volatile"|"_Bool"|"_Imaginary"|"_Complex"|"++"|"--"|"["|"]"
 
 %{
 #include <stdio.h>
-#include <string.h>
 
 int column = 1;
-int curr_column = 1;
 int line = 1;
+int curr_column = 1;
 int curr_line = 1;
 int flag = 0;
-int error = 0;
+int error = -1;
 
-void count(void);
-void comment();
-void ignore_line();
 void print_text(char * text);
 void print_content(char * text, char * content);
 %}
 
-%X CHARACTERLIT MULTILINECOMMENT
+%X CHAR MLINECOMMENT
 
 %%
-"/*"                                            { comment(); }
-"//".*                                          { count();}
+"/*"                                            { BEGIN MLINECOMMENT; curr_line = line; curr_column = column; column+=yyleng; }
+<MLINECOMMENT>"*/"                              { BEGIN 0; column+=yyleng; }
+<MLINECOMMENT><<EOF>>                           { BEGIN 0; printf("Line %d, col %d: unterminated comment\n",curr_line,curr_column); column+=yyleng; }
+<MLINECOMMENT>{LINETERMINATOR}                  { line++; column=1; }
+<MLINECOMMENT>.                                 { column+=yyleng; }
 
-"char"                                          { count(); print_text("CHAR"); }
-"else"                                          { count(); print_text("ELSE"); }
-"while"                                         { count(); print_text("WHILE"); }
-"if"                                            { count(); print_text("IF"); }
-"int"                                           { count(); print_text("INT"); }
-"short"                                         { count(); print_text("SHORT"); }
-"double"                                        { count(); print_text("DOUBLE"); }
-"return"                                        { count(); print_text("RETURN"); }
-"void"                                          { count(); print_text("VOID"); }
-"&"                                             { count(); print_text("BITWISEAND"); }
-"|"                                             { count(); print_text("BITWISEOR");  }
-"^"                                             { count(); print_text("BITWISEXOR");  }
-"&&"                                            { count(); print_text("AND"); }
-"="                                             { count(); print_text("ASSIGN"); }
-"*"                                             { count(); print_text("MUL"); }
-","                                             { count(); print_text("COMMA"); }
-"/"                                             { count(); print_text("DIV"); }
-"=="                                            { count(); print_text("EQ"); }
-">="                                            { count(); print_text("GE"); }
-">"                                             { count(); print_text("GT");  }
-"{"                                             { count(); print_text("LBRACE"); }
-"<="                                            { count(); print_text("LE"); }
-"("                                             { count(); print_text("LPAR"); }
-"<"                                             { count(); print_text("LT"); }
-"-"                                             { count(); print_text("MINUS"); }
-"%"                                             { count(); print_text("MOD");  }
-"!="                                            { count(); print_text("NE"); }
-"!"                                             { count(); print_text("NOT"); }
-"||"                                            { count(); print_text("OR"); }
-"+"                                             { count(); print_text("PLUS");  }
-"}"                                             { count(); print_text("RBRACE"); }
-")"                                             { count(); print_text("RPAR");  }
-";"                                             { count(); print_text("SEMI"); }
-{RESERVED}                                      { count(); print_content("RESERVED", yytext); }
+"//".*                                          { column+=yyleng; }
 
-{TAB}                                           { count(); }
-{SPACE}                                         { count(); }
-{NEWLINE}                                       { count(); }
-{LINETERMINATOR}                                { count(); }
+"char"                                          { column+=yyleng; print_text("CHAR"); }
+"else"                                          { column+=yyleng; print_text("ELSE"); }
+"while"                                         { column+=yyleng; print_text("WHILE"); }
+"if"                                            { column+=yyleng; print_text("IF"); }
+"int"                                           { column+=yyleng; print_text("INT"); }
+"short"                                         { column+=yyleng; print_text("SHORT"); }
+"double"                                        { column+=yyleng; print_text("DOUBLE"); }
+"return"                                        { column+=yyleng; print_text("RETURN"); }
+"void"                                          { column+=yyleng; print_text("VOID"); }
+"&"                                             { column+=yyleng; print_text("BITWISEAND"); }
+"|"                                             { column+=yyleng; print_text("BITWISEOR");  }
+"^"                                             { column+=yyleng; print_text("BITWISEXOR");  }
+"&&"                                            { column+=yyleng; print_text("AND"); }
+"="                                             { column+=yyleng; print_text("ASSIGN"); }
+"*"                                             { column+=yyleng; print_text("MUL"); }
+","                                             { column+=yyleng; print_text("COMMA"); }
+"/"                                             { column+=yyleng; print_text("DIV"); }
+"=="                                            { column+=yyleng; print_text("EQ"); }
+">="                                            { column+=yyleng; print_text("GE"); }
+">"                                             { column+=yyleng; print_text("GT");  }
+"{"                                             { column+=yyleng; print_text("LBRACE"); }
+"<="                                            { column+=yyleng; print_text("LE"); }
+"("                                             { column+=yyleng; print_text("LPAR"); }
+"<"                                             { column+=yyleng; print_text("LT"); }
+"-"                                             { column+=yyleng; print_text("MINUS"); }
+"%"                                             { column+=yyleng; print_text("MOD");  }
+"!="                                            { column+=yyleng; print_text("NE"); }
+"!"                                             { column+=yyleng; print_text("NOT"); }
+"||"                                            { column+=yyleng; print_text("OR"); }
+"+"                                             { column+=yyleng; print_text("PLUS");  }
+"}"                                             { column+=yyleng; print_text("RBRACE"); }
+")"                                             { column+=yyleng; print_text("RPAR");  }
+";"                                             { column+=yyleng; print_text("SEMI"); }
+{RESERVED}                                      { column+=yyleng; print_content("RESERVED", yytext); }
 
-{ID}                                            { count(); print_content("ID",yytext); }
-{INTLIT}                                        { count(); print_content("INTLIT",yytext); }
-{REALLIT}                                       { count(); print_content("REALLIT",yytext); }
+{TAB}                                           { column+=yyleng; }
+{SPACE}                                         { column+=yyleng; }
+{LINETERMINATOR}                                { column=1; line++; }
 
-{SINGLESPLIT}                                   { yymore(); BEGIN CHARACTERLIT; curr_column = column; curr_line = line; count(); }
-<CHARACTERLIT>{CHARLIT}                         { count(); yymore(); }
-<CHARACTERLIT>\\(.?)                            { printf("Line: %d, col %d: invalid char constant(%s)\n",curr_line,curr_column,yytext); count(); error = 1; }
-<CHARACTERLIT>{LINETERMINATOR}                  { BEGIN 0; printf("Line: %d, col %d: unterminated char constant\n",curr_line,curr_column); count(); error = 1; }
-<CHARACTERLIT>{SINGLESPLIT}                     { BEGIN 0; if(error == 0){print_content("CHARLIT",yytext);} count(); }
-<CHARACTERLIT><<EOF>>                           { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); count(); }
-.                                               { printf("Line %d, col %d: illegal character (%s)\n",line,column,yytext); count(); }
+{ID}                                            { column+=yyleng; print_content("ID",yytext); }
+{INTLIT}                                        { column+=yyleng; print_content("INTLIT",yytext); }
+
+{SINGLESPLIT}                                   { yymore(); BEGIN CHAR; curr_column = column; curr_line = line; error = -1; }
+<CHAR>{CHARLIT}                                 { yymore(); column+=yyleng; error++; }
+<CHAR>\\(.?)                                    { yymore(); error++;  }
+<CHAR>{LINETERMINATOR}                          { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); line++; column=1; }
+<CHAR>{SINGLESPLIT}                             { BEGIN 0; if(error == 0) { print_content("CHRLIT",yytext); } else { printf("Line %d, col %d: invalid char constant (%s)\n",curr_line,curr_column,yytext);} column+=yyleng; }
+<CHAR><<EOF>>                                   { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); line++; column=1; }
+
+{REALLIT}                                       { column+=yyleng; print_content("REALLIT",yytext); }
+.                                               { printf("Line %d, col %d: illegal character (%s)\n",line,column,yytext); column+=yyleng; }
 
 %%
 
-void count(void)
-{
-  int i;
-
-  for (i = 0; yytext[i] != '\0'; i++){
-
-    if (yytext[i] == '\n'){
-      column = 1;
-      line++;
-    }
-    else{
-      column+=yyleng;
-    }
-  }
-}
+/* 
+   Francisco José Rodrigues dos Santos 2015238068
+   João Afonso Póvoa Marques 2015227041
+*/
 
 void print_text(char* text)
 {
@@ -125,25 +113,6 @@ void print_content(char* text, char* content)
   if (flag == 1){
     printf("%s(%s)\n",text,content);
   }
-}
-
-void comment()
-{
-  char current, prev = 0;
-
-  while ((current = input()) != 0)
-  {
-    if(current == '\n'){
-      line++;
-      column = 1;
-    }
-    else if(current == '/' && prev == '*'){
-      return;
-    }
-    column+=yyleng;
-    prev = current;
-  }
-  printf("Line %d, col %d: unterminated comment\n",line,column);
 }
 
 int main(int argc, char * argv[])
@@ -162,3 +131,4 @@ int yywrap(void)
 {
   return 1;
 }
+

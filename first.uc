@@ -1,5 +1,6 @@
-int main(void) { 
-  char i = ’A’; while (i <= ’Z’) {
+int main(void) {
+  char i = 'A'; 
+  while (i <= 'Z') {
     putchar(i);
     i = i + 1; 
   }
