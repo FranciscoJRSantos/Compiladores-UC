@@ -24,137 +24,173 @@ char * cval;
 
 %%
 
-Program: INT ID LBRACE ProgramRead RBRACE;
+Primary_Expr
+        : ID
+        | INTLIT 
+        | CHRLIT 
+        | REALLIT 
+        | LPAR Expr RPAR
+        ; 
 
-ProgramRead: FunctionsAndDeclarations
-           | SEMI 
-           | FunctionsAndDeclarations ProgramRead
-           | SEMI ProgramRead
-           ;
+Secondary_Expr
+        : ID LPAR 
+        ;
 
-FunctionsAndDeclarations: FunctionDefinition 
-                        | FunctionDeclaration
-                        | Declaration
-                        | FunctionDefinition FunctionsAndDeclarations
-                        | FunctionDeclaration FunctionsAndDeclarations
-                        | Declaration FunctionsAndDeclarations
-                        ;
+Program
+        : INT ID LBRACE ProgramRead RBRACE
+        ;
+
+ProgramRead
+        : FunctionsAndDeclarations
+        | SEMI 
+        | FunctionsAndDeclarations ProgramRead
+        | SEMI ProgramRead
+        ;
+
+FunctionsAndDeclarations
+        : FunctionDefinition 
+        | FunctionDeclaration
+        | Declaration
+        | FunctionDefinition FunctionsAndDeclarations
+        | FunctionDeclaration FunctionsAndDeclarations
+        | Declaration FunctionsAndDeclarations
+        ;
 
 
-FunctionDefinition: TypeSpec FunctionDeclarator FunctionBody;
+FunctionDefinition
+        : TypeSpec FunctionDeclarator FunctionBody
+        ;
 
-FunctionBody: LBRACE RBRACE
-            | LBRACE DeclarationsAndStatements RBRACE
-            ;
+FunctionBody
+        : LBRACE RBRACE
+        | LBRACE DeclarationsAndStatements RBRACE
+        ;
 
-DeclarationsAndStatements: Statement DeclarationsAndStatements 
-                         | Declaration DeclarationsAndStatements 
-                         | Statement 
-                         | Declaration
-                         ;
+DeclarationsAndStatements
+        : Statement DeclarationsAndStatements 
+        | Declaration DeclarationsAndStatements 
+        | Statement 
+        | Declaration
+        ;
 
-FunctionDeclaration: TypeSpec FunctionDeclarator SEMI;
+FunctionDeclaration
+        : TypeSpec FunctionDeclarator SEMI
+        ;
 
-FunctionDeclarator: ID LPAR ParameterList RPAR;
+FunctionDeclarator
+        : ID LPAR ParameterList RPAR
+        ;
 
-ParameterList: ParameterDeclaration PL2;
+ParameterList
+        : ParameterDeclaration PL2
+        ;
 
-PL2: COMMA ParameterDeclaration
-   | COMMA ParameterDeclaration PL2
-   ;
+PL2
+        : COMMA ParameterDeclaration
+        | COMMA ParameterDeclaration PL2
+        ;
 
-ParameterDeclaration: TypeSpec
-                    | TypeSpec ID
-                    ;
+ParameterDeclaration
+        : TypeSpec
+        | TypeSpec ID
+        ;
 
-Declaration: TypeSpec Declarator D2 SEMI;
+Declaration
+        : TypeSpec Declarator D2 SEMI
+        ;
 
-D2: COMMA Declarator
-  | COMMA Declarator D2
-  ;
+D2
+        : COMMA Declarator
+        | COMMA Declarator D2
+        ;
 
-TypeSpec:   CHAR 
+TypeSpec
+        :   CHAR 
         |   INT 
         |   VOID 
         |   SHORT 
         |   DOUBLE
         ;
 
-Declarator: ID 
-          | ID ASSIGN Expr
-          ;
+Declarator
+        : ID 
+        | ID ASSIGN Expr
+        ;
 
-Statement: SEMI 
-         | Expr SEMI 
-         | LBRACE Statement2 RBRACE 
-         | IF LPAR Expr RPAR Statement 
-         | IF LPAR Expr RPAR Statement ELSE Statement 
-         | WHILE LPAR Expr RPAR Statement 
-         | RETURN SEMI
-         | RETURN Expr SEMI
-         ;
+Statement
+        : SEMI 
+        | Expr SEMI 
+        | LBRACE Statement2 RBRACE 
+        | IF LPAR Expr RPAR Statement 
+        | IF LPAR Expr RPAR Statement ELSE Statement 
+        | WHILE LPAR Expr RPAR Statement 
+        | RETURN SEMI
+        | RETURN Expr SEMI
+        ;
 
-Statement2: Statement
-   | Statement Statement2
-   ;
+Statement2
+        : Statement
+        | Statement Statement2
+        ;
 
-Expr: Expr Assign_Expr Expr 
-    | Expr Comparative_Expr Expr 
-    | Expr Multiplicative_Expr Expr 
-    | Expr Addictive_Expr Expr 
-    | Expr Relational_Expr Expr
-    | Expr Equality_Expr Expr
-    | EPMN Expr 
-    | ID LPAR RPAR
-    | ID LPAR ECE RPAR
-    | ELIT 
-    ;
+Multiplicative_Expr
+        : Primary_Expr
+        | Multiplicative_Expr MUL Primary_Expr
+        | Multiplicative_Expr DIV Primary_Expr
+        | Multiplicative_Expr MOD Primary_Expr
+        ;
 
-Assign_Expr: ASSIGN 
-           | COMMA 
-           ;
+Additive_Expr
+        : Multiplicative_Expr
+        | Additive_Expr PLUS Multiplicative_Expr
+        | Additive_Expr MINUS Multiplicative_Expr
+        ;
 
-Multiplicative_Expr: MUL 
-                   | DIV 
-                   | MOD
-                   ;
+Equal_Expr
+        : Relational_Expr
+        | Relational_Expr LT Additive_Expr
+        | Relational_Expr GT Additive_Expr
+        | Relational_Expr LE Additive_Expr
+        | Relational_Expr GE Additive_Expr
+        ;
 
-Addictive_Expr: PLUS 
-              | MINUS
-              ;
+And_Expr
+        : Equal_Expr
+        | And_Expr BITWISEAND Equal_Expr
+        ;
 
-Comparative_Expr: OR 
-                | AND 
-                | BITWISEAND 
-                | BITWISEOR 
-                | BITWISEXOR 
-                ;
+Exclusive_or_Expr
+        : And_Expr 
+        | Exclusive_or_Expr BITWISEXOR And_Expr
+        ;
 
-Relational_Expr: LE 
-               | GE 
-               | LT 
-               | GT 
-               ;
+Inclusive_or_Expr 
+        : Exclusive_or_Expr 
+        | Inclusive_or_Expr OR Exclusive_or_Expr
 
-Equality_Expr: EQ
-             | NE 
-             ;
+Logical_and_Expr
+        : Inclusive_or_Expr
+        | Logical_and_Expr AND Inclusive_or_Expr
+        ;
 
-EPMN: PLUS 
-    | MINUS 
-    | NOT
-    ;
+Logical_or_Expr
+        : Logical_and_Expr 
+        | Logical_or_Expr OR Logical_and_Expr
+        ;
 
-ECE: COMMA Expr
-   | COMMA Expr ECE 
-   ;
+Conditional_Expression
+        : Logical_or_Expr
+        ;
 
-ELIT: ID 
-    | INTLIT 
-    | CHRLIT 
-    | REALLIT 
-    | LPAR Expr RPAR
-    ;
+Assign_Expr
+        : Conditional_Expression
+        | TypeRead ASSIGN Assign_Expr
+        ;
+
+Expr    
+        : Assign_Expr
+        | Expr COMMA Assign_Expr
+        ;
 
 %%
 int main(int argc, char * argv[])
