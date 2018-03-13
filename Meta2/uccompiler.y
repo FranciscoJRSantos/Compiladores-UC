@@ -26,7 +26,8 @@ char * cval;
 
 Program: INT ID LBRACE ProgramRead RBRACE;
 
-ProgramRead: /* %empty */
+ProgramRead: FunctionsAndDeclarations
+           | SEMI 
            | FunctionsAndDeclarations ProgramRead
            | SEMI ProgramRead
            ;
@@ -58,7 +59,7 @@ FunctionDeclarator: ID LPAR ParameterList RPAR;
 
 ParameterList: ParameterDeclaration PL2;
 
-PL2: /* %empty */ 
+PL2: COMMA ParameterDeclaration
    | COMMA ParameterDeclaration PL2
    ;
 
@@ -68,7 +69,7 @@ ParameterDeclaration: TypeSpec
 
 Declaration: TypeSpec Declarator D2 SEMI;
 
-D2: /* %empty */ 
+D2: COMMA Declarator
   | COMMA Declarator D2
   ;
 
@@ -85,7 +86,7 @@ Declarator: ID
 
 Statement: SEMI 
          | Expr SEMI 
-         | LBRACE ST2 RBRACE 
+         | LBRACE Statement2 RBRACE 
          | IF LPAR Expr RPAR Statement 
          | IF LPAR Expr RPAR Statement ELSE Statement 
          | WHILE LPAR Expr RPAR Statement 
@@ -93,52 +94,58 @@ Statement: SEMI
          | RETURN Expr SEMI
          ;
 
-ST2: /* %empty */ 
-   | Statement ST2
+Statement2: Statement
+   | Statement Statement2
    ;
 
-Expr: Expr EAC Expr 
-    | Expr EOP Expr 
-    | Expr ECALC Expr 
-    | Expr ECOMP Expr
+Expr: Expr Assign_Expr Expr 
+    | Expr Comparative_Expr Expr 
+    | Expr Multiplicative_Expr Expr 
+    | Expr Addictive_Expr Expr 
+    | Expr Relational_Expr Expr
+    | Expr Equality_Expr Expr
     | EPMN Expr 
     | ID LPAR RPAR
     | ID LPAR ECE RPAR
     | ELIT 
     ;
 
-EAC: ASSIGN 
-   | COMMA 
-   ;
+Assign_Expr: ASSIGN 
+           | COMMA 
+           ;
 
-ECALC: PLUS 
-     | MINUS 
-     | MUL 
-     | DIV 
-     | MOD
-     ;
+Multiplicative_Expr: MUL 
+                   | DIV 
+                   | MOD
+                   ;
 
-EOP: OR 
-   | AND 
-   | BITWISEAND 
-   | BITWISEOR 
-   | BITWISEXOR 
-   ;
+Addictive_Expr: PLUS 
+              | MINUS
+              ;
 
-ECOMP: EQ 
-     | NE 
-     | LE 
-     | GE 
-     | LT 
-     | GT 
-     ;
+Comparative_Expr: OR 
+                | AND 
+                | BITWISEAND 
+                | BITWISEOR 
+                | BITWISEXOR 
+                ;
+
+Relational_Expr: LE 
+               | GE 
+               | LT 
+               | GT 
+               ;
+
+Equality_Expr: EQ
+             | NE 
+             ;
 
 EPMN: PLUS 
     | MINUS 
     | NOT
     ;
 
-ECE: /* %empty */ 
+ECE: COMMA Expr
    | COMMA Expr ECE 
    ;
 
