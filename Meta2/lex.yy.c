@@ -689,7 +689,7 @@ static int yy_more_len = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
 #line 1 "uccompiler.l"
-#line 21 "uccompiler.l"
+#line 2 "uccompiler.l"
 #include <stdio.h>
 #include "y.tab.h"
 
@@ -707,7 +707,7 @@ void yyerror(const char * s);
 #line 708 "lex.yy.c"
 
 #define INITIAL 0
-#define CHAR 1
+#define CHARSTATE 1
 #define MLINECOMMENT 2
 
 #ifndef YY_NO_UNISTD_H
@@ -1198,22 +1198,22 @@ YY_RULE_SETUP
 case 43:
 YY_RULE_SETUP
 #line 86 "uccompiler.l"
-{ column+=yyleng; print_content("ID",yytext); if (flag == 2) { yyval.string = (char *) strdup(yytext) } return ID; }
+{ column+=yyleng; print_content("ID",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext); } return ID; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
 #line 87 "uccompiler.l"
-{ column+=yyleng; print_content("INTLIT",yytext); if (flag == 2) { yyval.string = (char *) strdup(yytext) }return INTLIT; }
+{ column+=yyleng; print_content("INTLIT",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext); } return INTLIT; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
 #line 88 "uccompiler.l"
-{ column+=yyleng; print_content("REALLIT",yytext); if (flag == 2) { yyval.string = (char *) strdup(yytext) } return REALLIT; }
+{ column+=yyleng; print_content("REALLIT",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext); } return REALLIT; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
 #line 90 "uccompiler.l"
-{ yymore(); BEGIN CHAR; curr_column = column; curr_line = line; error = -1; }
+{ yymore(); BEGIN CHARSTATE; curr_column = column; curr_line = line; error = -1; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
@@ -1234,9 +1234,9 @@ YY_RULE_SETUP
 case 50:
 YY_RULE_SETUP
 #line 94 "uccompiler.l"
-{ BEGIN 0; if(error == 0) { print_content("CHRLIT",yytext); } else { printf("Line %d, col %d: invalid char constant (%s)\n",curr_line,curr_column,yytext);} column+=yyleng; if (flag == 2) {yyval.string = (char*)strdup(yytext)} return CHRLIT; }
+{ BEGIN 0; if(error == 0) { print_content("CHRLIT",yytext); } else { printf("Line %d, col %d: invalid char constant (%s)\n",curr_line,curr_column,yytext);} column+=yyleng; if (flag == 2) { yylval.cval = (char*)strdup(yytext); } return CHRLIT; }
 	YY_BREAK
-case YY_STATE_EOF(CHAR):
+case YY_STATE_EOF(CHARSTATE):
 #line 95 "uccompiler.l"
 { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); line++; column=1; }
 	YY_BREAK
@@ -2277,6 +2277,6 @@ int yywrap(void)
 }
 
 void yyerror(const char * s){
-  printf("Line %d, col %d: %s: %s\n",line,(int)(coluna-yyleng), s, yytext);
+  printf("Line %d, col %d: %s: %s\n",line,(int)(column-yyleng), s, yytext);
 }
 

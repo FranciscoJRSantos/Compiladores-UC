@@ -124,14 +124,15 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 11 "uccompiler.y"
+#line 13 "uccompiler.y"
 {
 int ival;
 char * cval;
+struct no * node;
 
 }
 /* Line 1529 of yacc.c.  */
-#line 135 "y.tab.h"
+#line 136 "y.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

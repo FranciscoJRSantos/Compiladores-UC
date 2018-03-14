@@ -1,3 +1,21 @@
+%{
+#include <stdio.h>
+#include "y.tab.h"
+
+int column = 1;
+int line = 1;
+int curr_column = 1;
+int curr_line = 1;
+int flag = 0;
+int error = -1;
+
+void print_text(char * text);
+void print_content(char * text, char * content);
+void yyerror(const char * s);
+%}
+
+%X CHARSTATE MLINECOMMENT
+
 O                   [0-7]{1,3}
 CHARACTERS          [a-zA-Z]
 UPPERCASE           [a-z]
@@ -16,24 +34,6 @@ RL1                 ({INTLIT}?"."{INTLIT})
 RL2                 ({INTLIT}"."{INTLIT}?)
 REALLIT             ({RL1}|{RL2})({EXPOENTE}{INTLIT})|({INTLIT}{EXPOENTE}{INTLIT})|({RL1}|{RL2})
 RESERVED            "auto"|"break"|"case"|"const"|"continue"|"default"|"do"|"enum"|"extern"|"float"|"for"|"goto"|"inline"|"long"|"register"|"restrict"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"volatile"|"_Bool"|"_Imaginary"|"_Complex"|"++"|"--"|"["|"]"
-
-%{
-#include <stdio.h>
-#include "y.tab.h"
-
-int column = 1;
-int line = 1;
-int curr_column = 1;
-int curr_line = 1;
-int flag = 0;
-int error = -1;
-
-void print_text(char * text);
-void print_content(char * text, char * content);
-void yyerror(const char * s);
-%}
-
-%X CHAR MLINECOMMENT
 
 %%
 "/*"                                            { BEGIN MLINECOMMENT; curr_line = line; curr_column = column; column+=yyleng; }
@@ -83,16 +83,16 @@ void yyerror(const char * s);
 {SPACE}                                         { column+=yyleng; }
 {LINETERMINATOR}                                { column=1; line++; }
 
-{ID}                                            { column+=yyleng; print_content("ID",yytext); if (flag == 2) { yyval.string = (char *) strdup(yytext) } return ID; }
-{INTLIT}                                        { column+=yyleng; print_content("INTLIT",yytext); if (flag == 2) { yyval.string = (char *) strdup(yytext) }return INTLIT; }
-{REALLIT}                                       { column+=yyleng; print_content("REALLIT",yytext); if (flag == 2) { yyval.string = (char *) strdup(yytext) } return REALLIT; }
+{ID}                                            { column+=yyleng; print_content("ID",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext); } return ID; }
+{INTLIT}                                        { column+=yyleng; print_content("INTLIT",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext); } return INTLIT; }
+{REALLIT}                                       { column+=yyleng; print_content("REALLIT",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext); } return REALLIT; }
 
-{SINGLESPLIT}                                   { yymore(); BEGIN CHAR; curr_column = column; curr_line = line; error = -1; }
-<CHAR>{CHARLIT}                                 { yymore(); error++; }
-<CHAR>\\(.?)                                    { yymore(); error=1;}
-<CHAR>{LINETERMINATOR}                          { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); line++; column=1; }
-<CHAR>{SINGLESPLIT}                             { BEGIN 0; if(error == 0) { print_content("CHRLIT",yytext); } else { printf("Line %d, col %d: invalid char constant (%s)\n",curr_line,curr_column,yytext);} column+=yyleng; if (flag == 2) {yyval.string = (char*)strdup(yytext)} return CHRLIT; }
-<CHAR><<EOF>>                                   { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); line++; column=1; }
+{SINGLESPLIT}                                   { yymore(); BEGIN CHARSTATE; curr_column = column; curr_line = line; error = -1; }
+<CHARSTATE>{CHARLIT}                            { yymore(); error++; }
+<CHARSTATE>\\(.?)                               { yymore(); error=1;}
+<CHARSTATE>{LINETERMINATOR}                     { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); line++; column=1; }
+<CHARSTATE>{SINGLESPLIT}                        { BEGIN 0; if(error == 0) { print_content("CHRLIT",yytext); } else { printf("Line %d, col %d: invalid char constant (%s)\n",curr_line,curr_column,yytext);} column+=yyleng; if (flag == 2) { yylval.cval = (char*)strdup(yytext); } return CHRLIT; }
+<CHARSTATE><<EOF>>                              { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); line++; column=1; }
 
 .                                               { printf("Line %d, col %d: illegal character (%s)\n",line,column,yytext); column+=yyleng; }
 
@@ -124,5 +124,5 @@ int yywrap(void)
 }
 
 void yyerror(const char * s){
-  printf("Line %d, col %d: %s: %s\n",line,(int)(coluna-yyleng), s, yytext);
+  printf("Line %d, col %d: %s: %s\n",line,(int)(column-yyleng), s, yytext);
 }
