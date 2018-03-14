@@ -19,12 +19,14 @@ char * cval;
 %token <cval> ID CHRLIT REALLIT RESERVED
 %token <ival> INTLIT
 
-%right ASSIGN
-%left COMMA
+%start Program 
 
 %%
+Program
+        : FunctionsAndDeclarations
+        ;
 
-Primary_Expr
+PrimaryExpr
         : ID
         | INTLIT 
         | CHRLIT 
@@ -32,30 +34,24 @@ Primary_Expr
         | LPAR Expr RPAR
         ; 
 
-Secondary_Expr
-        : ID LPAR 
+ParameterList
+        : ParameterDeclaration
+        | ParameterList COMMA ParameterDeclaration
         ;
-
-Program
-        : INT ID LBRACE ProgramRead RBRACE
-        ;
-
-ProgramRead
-        : FunctionsAndDeclarations
-        | SEMI 
-        | FunctionsAndDeclarations ProgramRead
-        | SEMI ProgramRead
+        
+ParameterDeclaration
+        : TypeSpec
+        | TypeSpec ID
         ;
 
 FunctionsAndDeclarations
         : FunctionDefinition 
         | FunctionDeclaration
         | Declaration
-        | FunctionDefinition FunctionsAndDeclarations
-        | FunctionDeclaration FunctionsAndDeclarations
-        | Declaration FunctionsAndDeclarations
-        ;
-
+        | FunctionsAndDeclarations FunctionDefinition 
+        | FunctionsAndDeclarations FunctionDeclaration 
+        | FunctionsAndDeclarations Declaration 
+        ; 
 
 FunctionDefinition
         : TypeSpec FunctionDeclarator FunctionBody
@@ -79,29 +75,16 @@ FunctionDeclaration
 
 FunctionDeclarator
         : ID LPAR ParameterList RPAR
-        ;
-
-ParameterList
-        : ParameterDeclaration PL2
-        ;
-
-PL2
-        : COMMA ParameterDeclaration
-        | COMMA ParameterDeclaration PL2
-        ;
-
-ParameterDeclaration
-        : TypeSpec
-        | TypeSpec ID
-        ;
+        ; 
 
 Declaration
-        : TypeSpec Declarator D2 SEMI
+        : TypeSpec Declarator SEMI
+        | TypeSpec Declarator DeclarationList SEMI
         ;
 
-D2
+DeclarationList
         : COMMA Declarator
-        | COMMA Declarator D2
+        | DeclarationList COMMA Declarator
         ;
 
 TypeSpec
@@ -114,82 +97,105 @@ TypeSpec
 
 Declarator
         : ID 
-        | ID ASSIGN Expr
+        | ID ASSIGN AssignExpr
         ;
 
 Statement
-        : SEMI 
-        | Expr SEMI 
-        | LBRACE Statement2 RBRACE 
-        | IF LPAR Expr RPAR Statement 
-        | IF LPAR Expr RPAR Statement ELSE Statement 
-        | WHILE LPAR Expr RPAR Statement 
-        | RETURN SEMI
+        : Compound_Stm
+        | Expr_Stm
+        | Select_Stm
+        | Iter_Stm
+        | Jump_Stm
+        ;
+
+Compound_Stm
+        : LBRACE RBRACE
+        | LBRACE Statement RBRACE
+        ;
+
+Expr_Stm
+        : SEMI
+        | Expr SEMI
+        ;
+
+Select_Stm
+        : IF LPAR Expr RPAR Statement
+        | IF LPAR Expr RPAR Statement ELSE Statement
+        ;
+
+Iter_Stm
+        : WHILE LPAR Expr RPAR Statement
+        ;
+
+Jump_Stm
+        : RETURN SEMI
         | RETURN Expr SEMI
+        ; 
+
+MultiplicativeExpr
+        : PrimaryExpr
+        | MultiplicativeExpr MUL PrimaryExpr
+        | MultiplicativeExpr DIV PrimaryExpr
+        | MultiplicativeExpr MOD PrimaryExpr
         ;
 
-Statement2
-        : Statement
-        | Statement Statement2
+AdditiveExpr
+        : MultiplicativeExpr
+        | AdditiveExpr PLUS MultiplicativeExpr
+        | AdditiveExpr MINUS MultiplicativeExpr
         ;
 
-Multiplicative_Expr
-        : Primary_Expr
-        | Multiplicative_Expr MUL Primary_Expr
-        | Multiplicative_Expr DIV Primary_Expr
-        | Multiplicative_Expr MOD Primary_Expr
+RelationalExpr
+        : AdditiveExpr 
+        | RelationalExpr LT AdditiveExpr
+        | RelationalExpr GT AdditiveExpr
+        | RelationalExpr LE AdditiveExpr
+        | RelationalExpr GE AdditiveExpr
         ;
 
-Additive_Expr
-        : Multiplicative_Expr
-        | Additive_Expr PLUS Multiplicative_Expr
-        | Additive_Expr MINUS Multiplicative_Expr
+EqualExpr
+        : RelationalExpr
+        | EqualExpr EQ RelationalExpr
+        | EqualExpr NE RelationalExpr
         ;
 
-Equal_Expr
-        : Relational_Expr
-        | Relational_Expr LT Additive_Expr
-        | Relational_Expr GT Additive_Expr
-        | Relational_Expr LE Additive_Expr
-        | Relational_Expr GE Additive_Expr
+AndExpr
+        : EqualExpr
+        | AndExpr BITWISEAND EqualExpr
         ;
 
-And_Expr
-        : Equal_Expr
-        | And_Expr BITWISEAND Equal_Expr
+ExclusiveOrExpr
+        : AndExpr 
+        | ExclusiveOrExpr BITWISEXOR AndExpr
         ;
 
-Exclusive_or_Expr
-        : And_Expr 
-        | Exclusive_or_Expr BITWISEXOR And_Expr
+InclusiveOrExpr 
+        : ExclusiveOrExpr 
+        | InclusiveOrExpr BITWISEOR ExclusiveOrExpr
+
+LocagicalAndExpr
+        : InclusiveOrExpr
+        | LocagicalAndExpr AND InclusiveOrExpr
         ;
 
-Inclusive_or_Expr 
-        : Exclusive_or_Expr 
-        | Inclusive_or_Expr OR Exclusive_or_Expr
-
-Logical_and_Expr
-        : Inclusive_or_Expr
-        | Logical_and_Expr AND Inclusive_or_Expr
+LogicalOrExpr
+        : LocagicalAndExpr 
+        | LogicalOrExpr OR LocagicalAndExpr
         ;
 
-Logical_or_Expr
-        : Logical_and_Expr 
-        | Logical_or_Expr OR Logical_and_Expr
+ConditionalExpr
+        : LogicalOrExpr
         ;
 
-Conditional_Expression
-        : Logical_or_Expr
-        ;
-
-Assign_Expr
-        : Conditional_Expression
-        | TypeRead ASSIGN Assign_Expr
+AssignExpr
+        : ConditionalExpr
+        | PrimaryExpr ASSIGN AssignExpr
+        | PrimaryExpr NOT ASSIGN AssignExpr
         ;
 
 Expr    
-        : Assign_Expr
-        | Expr COMMA Assign_Expr
+        : AssignExpr
+        | Expr COMMA AssignExpr
         ;
 
 %%
