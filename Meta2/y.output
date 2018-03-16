@@ -3,7 +3,8 @@ Terminals which are not used
    RESERVED
 
 
-State 140 conflicts: 1 shift/reduce
+State 49 conflicts: 1 shift/reduce
+State 143 conflicts: 1 shift/reduce
 
 
 Grammar
@@ -59,8 +60,8 @@ Grammar
    35         | SHORT
    36         | DOUBLE
 
-   37 Declarator: ID
-   38           | ID ASSIGN AssignExpr
+   37 Declarator: ID ASSIGN Expr
+   38           | ID
 
    39 Statement: Compound_Stm
    40          | Expr_Stm
@@ -84,48 +85,50 @@ Grammar
    53 Jump_Stm: RETURN SEMI
    54         | RETURN Expr SEMI
 
-   55 MultiplicativeExpr: PrimaryExpr
-   56                   | MultiplicativeExpr MUL PrimaryExpr
-   57                   | MultiplicativeExpr DIV PrimaryExpr
-   58                   | MultiplicativeExpr MOD PrimaryExpr
+   55 UnaryExpr: PrimaryExpr
+   56          | PLUS PrimaryExpr
+   57          | MINUS PrimaryExpr
+   58          | NOT PrimaryExpr
 
-   59 AdditiveExpr: MultiplicativeExpr
-   60             | AdditiveExpr PLUS MultiplicativeExpr
-   61             | AdditiveExpr MINUS MultiplicativeExpr
+   59 MultiplicativeExpr: PrimaryExpr
+   60                   | MultiplicativeExpr MUL PrimaryExpr
+   61                   | MultiplicativeExpr DIV PrimaryExpr
+   62                   | MultiplicativeExpr MOD PrimaryExpr
 
-   62 RelationalExpr: AdditiveExpr
-   63               | RelationalExpr LT AdditiveExpr
-   64               | RelationalExpr GT AdditiveExpr
-   65               | RelationalExpr LE AdditiveExpr
-   66               | RelationalExpr GE AdditiveExpr
+   63 AdditiveExpr: MultiplicativeExpr
+   64             | AdditiveExpr PLUS MultiplicativeExpr
+   65             | AdditiveExpr MINUS MultiplicativeExpr
 
-   67 EqualExpr: RelationalExpr
-   68          | EqualExpr EQ RelationalExpr
-   69          | EqualExpr NE RelationalExpr
+   66 RelationalExpr: AdditiveExpr
+   67               | RelationalExpr LT AdditiveExpr
+   68               | RelationalExpr GT AdditiveExpr
+   69               | RelationalExpr LE AdditiveExpr
+   70               | RelationalExpr GE AdditiveExpr
 
-   70 AndExpr: EqualExpr
-   71        | AndExpr BITWISEAND EqualExpr
+   71 EqualExpr: RelationalExpr
+   72          | EqualExpr EQ RelationalExpr
+   73          | EqualExpr NE RelationalExpr
 
-   72 ExclusiveOrExpr: AndExpr
-   73                | ExclusiveOrExpr BITWISEXOR AndExpr
+   74 AndExpr: EqualExpr
+   75        | AndExpr BITWISEAND EqualExpr
 
-   74 InclusiveOrExpr: ExclusiveOrExpr
-   75                | InclusiveOrExpr BITWISEOR ExclusiveOrExpr
+   76 ExclusiveOrExpr: AndExpr
+   77                | ExclusiveOrExpr BITWISEXOR AndExpr
 
-   76 LogicalAndExpr: InclusiveOrExpr
-   77               | LogicalAndExpr AND InclusiveOrExpr
+   78 InclusiveOrExpr: ExclusiveOrExpr
+   79                | InclusiveOrExpr BITWISEOR ExclusiveOrExpr
 
-   78 LogicalOrExpr: LogicalAndExpr
-   79              | LogicalOrExpr OR LogicalAndExpr
+   80 LogicalAndExpr: InclusiveOrExpr
+   81               | LogicalAndExpr AND InclusiveOrExpr
 
-   80 ConditionalExpr: LogicalOrExpr
+   82 LogicalOrExpr: LogicalAndExpr
+   83              | LogicalOrExpr OR LogicalAndExpr
 
-   81 AssignExpr: ConditionalExpr
-   82           | PrimaryExpr ASSIGN AssignExpr
-   83           | PrimaryExpr NOT ASSIGN AssignExpr
+   84 AssignExpr: LogicalOrExpr
+   85           | UnaryExpr ASSIGN AssignExpr
 
-   84 Expr: AssignExpr
-   85     | Expr COMMA AssignExpr
+   86 Expr: AssignExpr
+   87     | Expr COMMA AssignExpr
 
 
 Terminals, with rules where they appear
@@ -141,27 +144,27 @@ SHORT (263) 35
 DOUBLE (264) 36
 RETURN (265) 53 54
 VOID (266) 34
-BITWISEAND (267) 71
-BITWISEOR (268) 75
-BITWISEXOR (269) 73
-AND (270) 77
-ASSIGN (271) 38 82 83
-MUL (272) 56
-COMMA (273) 9 30 31 85
-DIV (274) 57
-EQ (275) 68
-GE (276) 66
-GT (277) 64
+BITWISEAND (267) 75
+BITWISEOR (268) 79
+BITWISEXOR (269) 77
+AND (270) 81
+ASSIGN (271) 37 85
+MUL (272) 60
+COMMA (273) 9 30 31 87
+DIV (274) 61
+EQ (275) 72
+GE (276) 70
+GT (277) 68
 LBRACE (278) 19 20 44 45 46
-LE (279) 65
+LE (279) 69
 LPAR (280) 6 7 26 50 51 52
-LT (281) 63
-MINUS (282) 61
-MOD (283) 58
-NE (284) 69
-NOT (285) 83
-OR (286) 79
-PLUS (287) 60
+LT (281) 67
+MINUS (282) 57 65
+MOD (283) 62
+NE (284) 73
+NOT (285) 58
+OR (286) 83
+PLUS (287) 56 64
 RBRACE (288) 19 20 44 45 46
 RPAR (289) 6 7 26 50 51 52
 SEMI (290) 25 27 28 29 47 48 49 53 54
@@ -179,7 +182,7 @@ $accept (41)
 Program (42)
     on left: 1, on right: 0
 PrimaryExpr (43)
-    on left: 2 3 4 5 6 7, on right: 55 56 57 58 82 83
+    on left: 2 3 4 5 6 7, on right: 55 56 57 58 59 60 61 62
 ParameterList (44)
     on left: 8 9, on right: 9 26
 ParameterDeclaration (45)
@@ -216,30 +219,30 @@ Iter_Stm (60)
     on left: 52, on right: 42
 Jump_Stm (61)
     on left: 53 54, on right: 43
-MultiplicativeExpr (62)
-    on left: 55 56 57 58, on right: 56 57 58 59 60 61
-AdditiveExpr (63)
-    on left: 59 60 61, on right: 60 61 62 63 64 65 66
-RelationalExpr (64)
-    on left: 62 63 64 65 66, on right: 63 64 65 66 67 68 69
-EqualExpr (65)
-    on left: 67 68 69, on right: 68 69 70 71
-AndExpr (66)
-    on left: 70 71, on right: 71 72 73
-ExclusiveOrExpr (67)
-    on left: 72 73, on right: 73 74 75
-InclusiveOrExpr (68)
+UnaryExpr (62)
+    on left: 55 56 57 58, on right: 85
+MultiplicativeExpr (63)
+    on left: 59 60 61 62, on right: 60 61 62 63 64 65
+AdditiveExpr (64)
+    on left: 63 64 65, on right: 64 65 66 67 68 69 70
+RelationalExpr (65)
+    on left: 66 67 68 69 70, on right: 67 68 69 70 71 72 73
+EqualExpr (66)
+    on left: 71 72 73, on right: 72 73 74 75
+AndExpr (67)
     on left: 74 75, on right: 75 76 77
-LogicalAndExpr (69)
+ExclusiveOrExpr (68)
     on left: 76 77, on right: 77 78 79
-LogicalOrExpr (70)
-    on left: 78 79, on right: 79 80
-ConditionalExpr (71)
-    on left: 80, on right: 81
+InclusiveOrExpr (69)
+    on left: 78 79, on right: 79 80 81
+LogicalAndExpr (70)
+    on left: 80 81, on right: 81 82 83
+LogicalOrExpr (71)
+    on left: 82 83, on right: 83 84
 AssignExpr (72)
-    on left: 81 82 83, on right: 38 82 83 84 85
+    on left: 84 85, on right: 85 86 87
 Expr (73)
-    on left: 84 85, on right: 6 48 50 51 52 54 85
+    on left: 86 87, on right: 6 37 48 50 51 52 54 87
 
 
 state 0
@@ -397,13 +400,13 @@ state 16
 state 17
 
    26 FunctionDeclarator: ID . LPAR ParameterList RPAR
-   37 Declarator: ID .
-   38           | ID . ASSIGN AssignExpr
+   37 Declarator: ID . ASSIGN Expr
+   38           | ID .
 
     ASSIGN  shift, and go to state 21
     LPAR    shift, and go to state 22
 
-    $default  reduce using rule 37 (Declarator)
+    $default  reduce using rule 38 (Declarator)
 
 
 state 18
@@ -437,26 +440,30 @@ state 20
 
 state 21
 
-   38 Declarator: ID ASSIGN . AssignExpr
+   37 Declarator: ID ASSIGN . Expr
 
     LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    MINUS    shift, and go to state 30
+    NOT      shift, and go to state 31
+    PLUS     shift, and go to state 32
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 34
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 37
-    EqualExpr           go to state 38
-    AndExpr             go to state 39
-    ExclusiveOrExpr     go to state 40
-    InclusiveOrExpr     go to state 41
-    LogicalAndExpr      go to state 42
-    LogicalOrExpr       go to state 43
-    ConditionalExpr     go to state 44
-    AssignExpr          go to state 45
+    PrimaryExpr         go to state 37
+    UnaryExpr           go to state 38
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 41
+    EqualExpr           go to state 42
+    AndExpr             go to state 43
+    ExclusiveOrExpr     go to state 44
+    InclusiveOrExpr     go to state 45
+    LogicalAndExpr      go to state 46
+    LogicalOrExpr       go to state 47
+    AssignExpr          go to state 48
+    Expr                go to state 49
 
 
 state 22
@@ -469,9 +476,9 @@ state 22
     DOUBLE  shift, and go to state 4
     VOID    shift, and go to state 5
 
-    ParameterList         go to state 46
-    ParameterDeclaration  go to state 47
-    TypeSpec              go to state 48
+    ParameterList         go to state 50
+    ParameterDeclaration  go to state 51
+    TypeSpec              go to state 52
 
 
 state 23
@@ -479,46 +486,49 @@ state 23
    19 FunctionBody: LBRACE . RBRACE
    20             | LBRACE . DeclarationsAndStatements RBRACE
 
-    error    shift, and go to state 49
+    error    shift, and go to state 53
     CHAR     shift, and go to state 1
-    WHILE    shift, and go to state 50
-    IF       shift, and go to state 51
+    WHILE    shift, and go to state 54
+    IF       shift, and go to state 55
     INT      shift, and go to state 2
     SHORT    shift, and go to state 3
     DOUBLE   shift, and go to state 4
-    RETURN   shift, and go to state 52
+    RETURN   shift, and go to state 56
     VOID     shift, and go to state 5
-    LBRACE   shift, and go to state 53
+    LBRACE   shift, and go to state 57
     LPAR     shift, and go to state 29
-    RBRACE   shift, and go to state 54
-    SEMI     shift, and go to state 55
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    MINUS    shift, and go to state 30
+    NOT      shift, and go to state 31
+    PLUS     shift, and go to state 32
+    RBRACE   shift, and go to state 58
+    SEMI     shift, and go to state 59
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr                go to state 34
-    DeclarationsAndStatements  go to state 56
-    Declaration                go to state 57
-    TypeSpec                   go to state 58
-    Statement                  go to state 59
-    Compound_Stm               go to state 60
-    Expr_Stm                   go to state 61
-    Select_Stm                 go to state 62
-    Iter_Stm                   go to state 63
-    Jump_Stm                   go to state 64
-    MultiplicativeExpr         go to state 35
-    AdditiveExpr               go to state 36
-    RelationalExpr             go to state 37
-    EqualExpr                  go to state 38
-    AndExpr                    go to state 39
-    ExclusiveOrExpr            go to state 40
-    InclusiveOrExpr            go to state 41
-    LogicalAndExpr             go to state 42
-    LogicalOrExpr              go to state 43
-    ConditionalExpr            go to state 44
-    AssignExpr                 go to state 65
-    Expr                       go to state 66
+    PrimaryExpr                go to state 37
+    DeclarationsAndStatements  go to state 60
+    Declaration                go to state 61
+    TypeSpec                   go to state 62
+    Statement                  go to state 63
+    Compound_Stm               go to state 64
+    Expr_Stm                   go to state 65
+    Select_Stm                 go to state 66
+    Iter_Stm                   go to state 67
+    Jump_Stm                   go to state 68
+    UnaryExpr                  go to state 38
+    MultiplicativeExpr         go to state 39
+    AdditiveExpr               go to state 40
+    RelationalExpr             go to state 41
+    EqualExpr                  go to state 42
+    AndExpr                    go to state 43
+    ExclusiveOrExpr            go to state 44
+    InclusiveOrExpr            go to state 45
+    LogicalAndExpr             go to state 46
+    LogicalOrExpr              go to state 47
+    AssignExpr                 go to state 48
+    Expr                       go to state 69
 
 
 state 24
@@ -539,9 +549,9 @@ state 26
 
    30 DeclarationList: COMMA . Declarator
 
-    ID  shift, and go to state 67
+    ID  shift, and go to state 70
 
-    Declarator  go to state 68
+    Declarator  go to state 71
 
 
 state 27
@@ -556,8 +566,8 @@ state 28
    28 Declaration: TypeSpec Declarator DeclarationList . SEMI
    31 DeclarationList: DeclarationList . COMMA Declarator
 
-    COMMA  shift, and go to state 69
-    SEMI   shift, and go to state 70
+    COMMA  shift, and go to state 72
+    SEMI   shift, and go to state 73
 
 
 state 29
@@ -565,816 +575,915 @@ state 29
     6 PrimaryExpr: LPAR . Expr RPAR
     7            | LPAR . error RPAR
 
-    error    shift, and go to state 71
+    error    shift, and go to state 74
     LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    MINUS    shift, and go to state 30
+    NOT      shift, and go to state 31
+    PLUS     shift, and go to state 32
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 34
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 37
-    EqualExpr           go to state 38
-    AndExpr             go to state 39
-    ExclusiveOrExpr     go to state 40
-    InclusiveOrExpr     go to state 41
-    LogicalAndExpr      go to state 42
-    LogicalOrExpr       go to state 43
-    ConditionalExpr     go to state 44
-    AssignExpr          go to state 65
-    Expr                go to state 72
+    PrimaryExpr         go to state 37
+    UnaryExpr           go to state 38
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 41
+    EqualExpr           go to state 42
+    AndExpr             go to state 43
+    ExclusiveOrExpr     go to state 44
+    InclusiveOrExpr     go to state 45
+    LogicalAndExpr      go to state 46
+    LogicalOrExpr       go to state 47
+    AssignExpr          go to state 48
+    Expr                go to state 75
 
 
 state 30
+
+   57 UnaryExpr: MINUS . PrimaryExpr
+
+    LPAR     shift, and go to state 29
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
+
+    PrimaryExpr  go to state 76
+
+
+state 31
+
+   58 UnaryExpr: NOT . PrimaryExpr
+
+    LPAR     shift, and go to state 29
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
+
+    PrimaryExpr  go to state 77
+
+
+state 32
+
+   56 UnaryExpr: PLUS . PrimaryExpr
+
+    LPAR     shift, and go to state 29
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
+
+    PrimaryExpr  go to state 78
+
+
+state 33
 
     2 PrimaryExpr: ID .
 
     $default  reduce using rule 2 (PrimaryExpr)
 
 
-state 31
+state 34
 
     4 PrimaryExpr: CHRLIT .
 
     $default  reduce using rule 4 (PrimaryExpr)
 
 
-state 32
+state 35
 
     5 PrimaryExpr: REALLIT .
 
     $default  reduce using rule 5 (PrimaryExpr)
 
 
-state 33
+state 36
 
     3 PrimaryExpr: INTLIT .
 
     $default  reduce using rule 3 (PrimaryExpr)
 
 
-state 34
-
-   55 MultiplicativeExpr: PrimaryExpr .
-   82 AssignExpr: PrimaryExpr . ASSIGN AssignExpr
-   83           | PrimaryExpr . NOT ASSIGN AssignExpr
-
-    ASSIGN  shift, and go to state 73
-    NOT     shift, and go to state 74
-
-    $default  reduce using rule 55 (MultiplicativeExpr)
-
-
-state 35
-
-   56 MultiplicativeExpr: MultiplicativeExpr . MUL PrimaryExpr
-   57                   | MultiplicativeExpr . DIV PrimaryExpr
-   58                   | MultiplicativeExpr . MOD PrimaryExpr
-   59 AdditiveExpr: MultiplicativeExpr .
-
-    MUL  shift, and go to state 75
-    DIV  shift, and go to state 76
-    MOD  shift, and go to state 77
-
-    $default  reduce using rule 59 (AdditiveExpr)
-
-
-state 36
-
-   60 AdditiveExpr: AdditiveExpr . PLUS MultiplicativeExpr
-   61             | AdditiveExpr . MINUS MultiplicativeExpr
-   62 RelationalExpr: AdditiveExpr .
-
-    MINUS  shift, and go to state 78
-    PLUS   shift, and go to state 79
-
-    $default  reduce using rule 62 (RelationalExpr)
-
-
 state 37
 
-   63 RelationalExpr: RelationalExpr . LT AdditiveExpr
-   64               | RelationalExpr . GT AdditiveExpr
-   65               | RelationalExpr . LE AdditiveExpr
-   66               | RelationalExpr . GE AdditiveExpr
-   67 EqualExpr: RelationalExpr .
+   55 UnaryExpr: PrimaryExpr .
+   59 MultiplicativeExpr: PrimaryExpr .
 
-    GE  shift, and go to state 80
-    GT  shift, and go to state 81
-    LE  shift, and go to state 82
-    LT  shift, and go to state 83
-
-    $default  reduce using rule 67 (EqualExpr)
+    ASSIGN    reduce using rule 55 (UnaryExpr)
+    $default  reduce using rule 59 (MultiplicativeExpr)
 
 
 state 38
 
-   68 EqualExpr: EqualExpr . EQ RelationalExpr
-   69          | EqualExpr . NE RelationalExpr
-   70 AndExpr: EqualExpr .
+   85 AssignExpr: UnaryExpr . ASSIGN AssignExpr
 
-    EQ  shift, and go to state 84
-    NE  shift, and go to state 85
-
-    $default  reduce using rule 70 (AndExpr)
+    ASSIGN  shift, and go to state 79
 
 
 state 39
 
-   71 AndExpr: AndExpr . BITWISEAND EqualExpr
-   72 ExclusiveOrExpr: AndExpr .
+   60 MultiplicativeExpr: MultiplicativeExpr . MUL PrimaryExpr
+   61                   | MultiplicativeExpr . DIV PrimaryExpr
+   62                   | MultiplicativeExpr . MOD PrimaryExpr
+   63 AdditiveExpr: MultiplicativeExpr .
 
-    BITWISEAND  shift, and go to state 86
+    MUL  shift, and go to state 80
+    DIV  shift, and go to state 81
+    MOD  shift, and go to state 82
 
-    $default  reduce using rule 72 (ExclusiveOrExpr)
+    $default  reduce using rule 63 (AdditiveExpr)
 
 
 state 40
 
-   73 ExclusiveOrExpr: ExclusiveOrExpr . BITWISEXOR AndExpr
-   74 InclusiveOrExpr: ExclusiveOrExpr .
+   64 AdditiveExpr: AdditiveExpr . PLUS MultiplicativeExpr
+   65             | AdditiveExpr . MINUS MultiplicativeExpr
+   66 RelationalExpr: AdditiveExpr .
 
-    BITWISEXOR  shift, and go to state 87
+    MINUS  shift, and go to state 83
+    PLUS   shift, and go to state 84
 
-    $default  reduce using rule 74 (InclusiveOrExpr)
+    $default  reduce using rule 66 (RelationalExpr)
 
 
 state 41
 
-   75 InclusiveOrExpr: InclusiveOrExpr . BITWISEOR ExclusiveOrExpr
-   76 LogicalAndExpr: InclusiveOrExpr .
+   67 RelationalExpr: RelationalExpr . LT AdditiveExpr
+   68               | RelationalExpr . GT AdditiveExpr
+   69               | RelationalExpr . LE AdditiveExpr
+   70               | RelationalExpr . GE AdditiveExpr
+   71 EqualExpr: RelationalExpr .
 
-    BITWISEOR  shift, and go to state 88
+    GE  shift, and go to state 85
+    GT  shift, and go to state 86
+    LE  shift, and go to state 87
+    LT  shift, and go to state 88
 
-    $default  reduce using rule 76 (LogicalAndExpr)
+    $default  reduce using rule 71 (EqualExpr)
 
 
 state 42
 
-   77 LogicalAndExpr: LogicalAndExpr . AND InclusiveOrExpr
-   78 LogicalOrExpr: LogicalAndExpr .
+   72 EqualExpr: EqualExpr . EQ RelationalExpr
+   73          | EqualExpr . NE RelationalExpr
+   74 AndExpr: EqualExpr .
 
-    AND  shift, and go to state 89
+    EQ  shift, and go to state 89
+    NE  shift, and go to state 90
 
-    $default  reduce using rule 78 (LogicalOrExpr)
+    $default  reduce using rule 74 (AndExpr)
 
 
 state 43
 
-   79 LogicalOrExpr: LogicalOrExpr . OR LogicalAndExpr
-   80 ConditionalExpr: LogicalOrExpr .
+   75 AndExpr: AndExpr . BITWISEAND EqualExpr
+   76 ExclusiveOrExpr: AndExpr .
 
-    OR  shift, and go to state 90
+    BITWISEAND  shift, and go to state 91
 
-    $default  reduce using rule 80 (ConditionalExpr)
+    $default  reduce using rule 76 (ExclusiveOrExpr)
 
 
 state 44
 
-   81 AssignExpr: ConditionalExpr .
+   77 ExclusiveOrExpr: ExclusiveOrExpr . BITWISEXOR AndExpr
+   78 InclusiveOrExpr: ExclusiveOrExpr .
 
-    $default  reduce using rule 81 (AssignExpr)
+    BITWISEXOR  shift, and go to state 92
+
+    $default  reduce using rule 78 (InclusiveOrExpr)
 
 
 state 45
 
-   38 Declarator: ID ASSIGN AssignExpr .
+   79 InclusiveOrExpr: InclusiveOrExpr . BITWISEOR ExclusiveOrExpr
+   80 LogicalAndExpr: InclusiveOrExpr .
 
-    $default  reduce using rule 38 (Declarator)
+    BITWISEOR  shift, and go to state 93
+
+    $default  reduce using rule 80 (LogicalAndExpr)
 
 
 state 46
 
-    9 ParameterList: ParameterList . COMMA ParameterDeclaration
-   26 FunctionDeclarator: ID LPAR ParameterList . RPAR
+   81 LogicalAndExpr: LogicalAndExpr . AND InclusiveOrExpr
+   82 LogicalOrExpr: LogicalAndExpr .
 
-    COMMA  shift, and go to state 91
-    RPAR   shift, and go to state 92
+    AND  shift, and go to state 94
+
+    $default  reduce using rule 82 (LogicalOrExpr)
 
 
 state 47
+
+   83 LogicalOrExpr: LogicalOrExpr . OR LogicalAndExpr
+   84 AssignExpr: LogicalOrExpr .
+
+    OR  shift, and go to state 95
+
+    $default  reduce using rule 84 (AssignExpr)
+
+
+state 48
+
+   86 Expr: AssignExpr .
+
+    $default  reduce using rule 86 (Expr)
+
+
+state 49
+
+   37 Declarator: ID ASSIGN Expr .
+   87 Expr: Expr . COMMA AssignExpr
+
+    COMMA  shift, and go to state 96
+
+    COMMA     [reduce using rule 37 (Declarator)]
+    $default  reduce using rule 37 (Declarator)
+
+
+state 50
+
+    9 ParameterList: ParameterList . COMMA ParameterDeclaration
+   26 FunctionDeclarator: ID LPAR ParameterList . RPAR
+
+    COMMA  shift, and go to state 97
+    RPAR   shift, and go to state 98
+
+
+state 51
 
     8 ParameterList: ParameterDeclaration .
 
     $default  reduce using rule 8 (ParameterList)
 
 
-state 48
+state 52
 
    10 ParameterDeclaration: TypeSpec .
    11                     | TypeSpec . ID
 
-    ID  shift, and go to state 93
+    ID  shift, and go to state 99
 
     $default  reduce using rule 10 (ParameterDeclaration)
 
 
-state 49
+state 53
 
    49 Expr_Stm: error . SEMI
 
-    SEMI  shift, and go to state 94
+    SEMI  shift, and go to state 100
 
 
-state 50
+state 54
 
    52 Iter_Stm: WHILE . LPAR Expr RPAR Statement
 
-    LPAR  shift, and go to state 95
+    LPAR  shift, and go to state 101
 
 
-state 51
+state 55
 
    50 Select_Stm: IF . LPAR Expr RPAR Statement
    51           | IF . LPAR Expr RPAR Statement ELSE Statement
 
-    LPAR  shift, and go to state 96
+    LPAR  shift, and go to state 102
 
 
-state 52
+state 56
 
    53 Jump_Stm: RETURN . SEMI
    54         | RETURN . Expr SEMI
 
     LPAR     shift, and go to state 29
-    SEMI     shift, and go to state 97
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    MINUS    shift, and go to state 30
+    NOT      shift, and go to state 31
+    PLUS     shift, and go to state 32
+    SEMI     shift, and go to state 103
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 34
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 37
-    EqualExpr           go to state 38
-    AndExpr             go to state 39
-    ExclusiveOrExpr     go to state 40
-    InclusiveOrExpr     go to state 41
-    LogicalAndExpr      go to state 42
-    LogicalOrExpr       go to state 43
-    ConditionalExpr     go to state 44
-    AssignExpr          go to state 65
-    Expr                go to state 98
+    PrimaryExpr         go to state 37
+    UnaryExpr           go to state 38
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 41
+    EqualExpr           go to state 42
+    AndExpr             go to state 43
+    ExclusiveOrExpr     go to state 44
+    InclusiveOrExpr     go to state 45
+    LogicalAndExpr      go to state 46
+    LogicalOrExpr       go to state 47
+    AssignExpr          go to state 48
+    Expr                go to state 104
 
 
-state 53
+state 57
 
    44 Compound_Stm: LBRACE . RBRACE
    45             | LBRACE . Statement RBRACE
    46             | LBRACE . error RBRACE
 
-    error    shift, and go to state 99
-    WHILE    shift, and go to state 50
-    IF       shift, and go to state 51
-    RETURN   shift, and go to state 52
-    LBRACE   shift, and go to state 53
+    error    shift, and go to state 105
+    WHILE    shift, and go to state 54
+    IF       shift, and go to state 55
+    RETURN   shift, and go to state 56
+    LBRACE   shift, and go to state 57
     LPAR     shift, and go to state 29
-    RBRACE   shift, and go to state 100
-    SEMI     shift, and go to state 55
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    MINUS    shift, and go to state 30
+    NOT      shift, and go to state 31
+    PLUS     shift, and go to state 32
+    RBRACE   shift, and go to state 106
+    SEMI     shift, and go to state 59
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 34
-    Statement           go to state 101
-    Compound_Stm        go to state 60
-    Expr_Stm            go to state 61
-    Select_Stm          go to state 62
-    Iter_Stm            go to state 63
-    Jump_Stm            go to state 64
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 37
-    EqualExpr           go to state 38
-    AndExpr             go to state 39
-    ExclusiveOrExpr     go to state 40
-    InclusiveOrExpr     go to state 41
-    LogicalAndExpr      go to state 42
-    LogicalOrExpr       go to state 43
-    ConditionalExpr     go to state 44
-    AssignExpr          go to state 65
-    Expr                go to state 66
+    PrimaryExpr         go to state 37
+    Statement           go to state 107
+    Compound_Stm        go to state 64
+    Expr_Stm            go to state 65
+    Select_Stm          go to state 66
+    Iter_Stm            go to state 67
+    Jump_Stm            go to state 68
+    UnaryExpr           go to state 38
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 41
+    EqualExpr           go to state 42
+    AndExpr             go to state 43
+    ExclusiveOrExpr     go to state 44
+    InclusiveOrExpr     go to state 45
+    LogicalAndExpr      go to state 46
+    LogicalOrExpr       go to state 47
+    AssignExpr          go to state 48
+    Expr                go to state 69
 
 
-state 54
+state 58
 
    19 FunctionBody: LBRACE RBRACE .
 
     $default  reduce using rule 19 (FunctionBody)
 
 
-state 55
+state 59
 
    47 Expr_Stm: SEMI .
 
     $default  reduce using rule 47 (Expr_Stm)
 
 
-state 56
+state 60
 
    20 FunctionBody: LBRACE DeclarationsAndStatements . RBRACE
 
-    RBRACE  shift, and go to state 102
+    RBRACE  shift, and go to state 108
 
 
-state 57
+state 61
 
    22 DeclarationsAndStatements: Declaration . DeclarationsAndStatements
    24                          | Declaration .
 
-    error    shift, and go to state 49
+    error    shift, and go to state 53
     CHAR     shift, and go to state 1
-    WHILE    shift, and go to state 50
-    IF       shift, and go to state 51
+    WHILE    shift, and go to state 54
+    IF       shift, and go to state 55
     INT      shift, and go to state 2
     SHORT    shift, and go to state 3
     DOUBLE   shift, and go to state 4
-    RETURN   shift, and go to state 52
+    RETURN   shift, and go to state 56
     VOID     shift, and go to state 5
-    LBRACE   shift, and go to state 53
+    LBRACE   shift, and go to state 57
     LPAR     shift, and go to state 29
-    SEMI     shift, and go to state 55
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    MINUS    shift, and go to state 30
+    NOT      shift, and go to state 31
+    PLUS     shift, and go to state 32
+    SEMI     shift, and go to state 59
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
     RBRACE  reduce using rule 24 (DeclarationsAndStatements)
 
-    PrimaryExpr                go to state 34
-    DeclarationsAndStatements  go to state 103
-    Declaration                go to state 57
-    TypeSpec                   go to state 58
-    Statement                  go to state 59
-    Compound_Stm               go to state 60
-    Expr_Stm                   go to state 61
-    Select_Stm                 go to state 62
-    Iter_Stm                   go to state 63
-    Jump_Stm                   go to state 64
-    MultiplicativeExpr         go to state 35
-    AdditiveExpr               go to state 36
-    RelationalExpr             go to state 37
-    EqualExpr                  go to state 38
-    AndExpr                    go to state 39
-    ExclusiveOrExpr            go to state 40
-    InclusiveOrExpr            go to state 41
-    LogicalAndExpr             go to state 42
-    LogicalOrExpr              go to state 43
-    ConditionalExpr            go to state 44
-    AssignExpr                 go to state 65
-    Expr                       go to state 66
+    PrimaryExpr                go to state 37
+    DeclarationsAndStatements  go to state 109
+    Declaration                go to state 61
+    TypeSpec                   go to state 62
+    Statement                  go to state 63
+    Compound_Stm               go to state 64
+    Expr_Stm                   go to state 65
+    Select_Stm                 go to state 66
+    Iter_Stm                   go to state 67
+    Jump_Stm                   go to state 68
+    UnaryExpr                  go to state 38
+    MultiplicativeExpr         go to state 39
+    AdditiveExpr               go to state 40
+    RelationalExpr             go to state 41
+    EqualExpr                  go to state 42
+    AndExpr                    go to state 43
+    ExclusiveOrExpr            go to state 44
+    InclusiveOrExpr            go to state 45
+    LogicalAndExpr             go to state 46
+    LogicalOrExpr              go to state 47
+    AssignExpr                 go to state 48
+    Expr                       go to state 69
 
 
-state 58
+state 62
 
    27 Declaration: TypeSpec . Declarator SEMI
    28            | TypeSpec . Declarator DeclarationList SEMI
    29            | TypeSpec . error SEMI
 
     error  shift, and go to state 16
-    ID     shift, and go to state 67
+    ID     shift, and go to state 70
 
     Declarator  go to state 19
 
 
-state 59
+state 63
 
    21 DeclarationsAndStatements: Statement . DeclarationsAndStatements
    23                          | Statement .
 
-    error    shift, and go to state 49
+    error    shift, and go to state 53
     CHAR     shift, and go to state 1
-    WHILE    shift, and go to state 50
-    IF       shift, and go to state 51
+    WHILE    shift, and go to state 54
+    IF       shift, and go to state 55
     INT      shift, and go to state 2
     SHORT    shift, and go to state 3
     DOUBLE   shift, and go to state 4
-    RETURN   shift, and go to state 52
+    RETURN   shift, and go to state 56
     VOID     shift, and go to state 5
-    LBRACE   shift, and go to state 53
+    LBRACE   shift, and go to state 57
     LPAR     shift, and go to state 29
-    SEMI     shift, and go to state 55
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    MINUS    shift, and go to state 30
+    NOT      shift, and go to state 31
+    PLUS     shift, and go to state 32
+    SEMI     shift, and go to state 59
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
     RBRACE  reduce using rule 23 (DeclarationsAndStatements)
 
-    PrimaryExpr                go to state 34
-    DeclarationsAndStatements  go to state 104
-    Declaration                go to state 57
-    TypeSpec                   go to state 58
-    Statement                  go to state 59
-    Compound_Stm               go to state 60
-    Expr_Stm                   go to state 61
-    Select_Stm                 go to state 62
-    Iter_Stm                   go to state 63
-    Jump_Stm                   go to state 64
-    MultiplicativeExpr         go to state 35
-    AdditiveExpr               go to state 36
-    RelationalExpr             go to state 37
-    EqualExpr                  go to state 38
-    AndExpr                    go to state 39
-    ExclusiveOrExpr            go to state 40
-    InclusiveOrExpr            go to state 41
-    LogicalAndExpr             go to state 42
-    LogicalOrExpr              go to state 43
-    ConditionalExpr            go to state 44
-    AssignExpr                 go to state 65
-    Expr                       go to state 66
+    PrimaryExpr                go to state 37
+    DeclarationsAndStatements  go to state 110
+    Declaration                go to state 61
+    TypeSpec                   go to state 62
+    Statement                  go to state 63
+    Compound_Stm               go to state 64
+    Expr_Stm                   go to state 65
+    Select_Stm                 go to state 66
+    Iter_Stm                   go to state 67
+    Jump_Stm                   go to state 68
+    UnaryExpr                  go to state 38
+    MultiplicativeExpr         go to state 39
+    AdditiveExpr               go to state 40
+    RelationalExpr             go to state 41
+    EqualExpr                  go to state 42
+    AndExpr                    go to state 43
+    ExclusiveOrExpr            go to state 44
+    InclusiveOrExpr            go to state 45
+    LogicalAndExpr             go to state 46
+    LogicalOrExpr              go to state 47
+    AssignExpr                 go to state 48
+    Expr                       go to state 69
 
 
-state 60
+state 64
 
    39 Statement: Compound_Stm .
 
     $default  reduce using rule 39 (Statement)
 
 
-state 61
+state 65
 
    40 Statement: Expr_Stm .
 
     $default  reduce using rule 40 (Statement)
 
 
-state 62
+state 66
 
    41 Statement: Select_Stm .
 
     $default  reduce using rule 41 (Statement)
 
 
-state 63
+state 67
 
    42 Statement: Iter_Stm .
 
     $default  reduce using rule 42 (Statement)
 
 
-state 64
+state 68
 
    43 Statement: Jump_Stm .
 
     $default  reduce using rule 43 (Statement)
 
 
-state 65
-
-   84 Expr: AssignExpr .
-
-    $default  reduce using rule 84 (Expr)
-
-
-state 66
+state 69
 
    48 Expr_Stm: Expr . SEMI
-   85 Expr: Expr . COMMA AssignExpr
+   87 Expr: Expr . COMMA AssignExpr
 
-    COMMA  shift, and go to state 105
-    SEMI   shift, and go to state 106
+    COMMA  shift, and go to state 96
+    SEMI   shift, and go to state 111
 
 
-state 67
+state 70
 
-   37 Declarator: ID .
-   38           | ID . ASSIGN AssignExpr
+   37 Declarator: ID . ASSIGN Expr
+   38           | ID .
 
     ASSIGN  shift, and go to state 21
 
-    $default  reduce using rule 37 (Declarator)
+    $default  reduce using rule 38 (Declarator)
 
 
-state 68
+state 71
 
    30 DeclarationList: COMMA Declarator .
 
     $default  reduce using rule 30 (DeclarationList)
 
 
-state 69
+state 72
 
    31 DeclarationList: DeclarationList COMMA . Declarator
 
-    ID  shift, and go to state 67
+    ID  shift, and go to state 70
 
-    Declarator  go to state 107
+    Declarator  go to state 112
 
 
-state 70
+state 73
 
    28 Declaration: TypeSpec Declarator DeclarationList SEMI .
 
     $default  reduce using rule 28 (Declaration)
 
 
-state 71
+state 74
 
     7 PrimaryExpr: LPAR error . RPAR
 
-    RPAR  shift, and go to state 108
-
-
-state 72
-
-    6 PrimaryExpr: LPAR Expr . RPAR
-   85 Expr: Expr . COMMA AssignExpr
-
-    COMMA  shift, and go to state 105
-    RPAR   shift, and go to state 109
-
-
-state 73
-
-   82 AssignExpr: PrimaryExpr ASSIGN . AssignExpr
-
-    LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
-
-    PrimaryExpr         go to state 34
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 37
-    EqualExpr           go to state 38
-    AndExpr             go to state 39
-    ExclusiveOrExpr     go to state 40
-    InclusiveOrExpr     go to state 41
-    LogicalAndExpr      go to state 42
-    LogicalOrExpr       go to state 43
-    ConditionalExpr     go to state 44
-    AssignExpr          go to state 110
-
-
-state 74
-
-   83 AssignExpr: PrimaryExpr NOT . ASSIGN AssignExpr
-
-    ASSIGN  shift, and go to state 111
+    RPAR  shift, and go to state 113
 
 
 state 75
 
-   56 MultiplicativeExpr: MultiplicativeExpr MUL . PrimaryExpr
+    6 PrimaryExpr: LPAR Expr . RPAR
+   87 Expr: Expr . COMMA AssignExpr
 
-    LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
-
-    PrimaryExpr  go to state 112
+    COMMA  shift, and go to state 96
+    RPAR   shift, and go to state 114
 
 
 state 76
 
-   57 MultiplicativeExpr: MultiplicativeExpr DIV . PrimaryExpr
+   57 UnaryExpr: MINUS PrimaryExpr .
 
-    LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
-
-    PrimaryExpr  go to state 113
+    $default  reduce using rule 57 (UnaryExpr)
 
 
 state 77
 
-   58 MultiplicativeExpr: MultiplicativeExpr MOD . PrimaryExpr
+   58 UnaryExpr: NOT PrimaryExpr .
 
-    LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
-
-    PrimaryExpr  go to state 114
+    $default  reduce using rule 58 (UnaryExpr)
 
 
 state 78
 
-   61 AdditiveExpr: AdditiveExpr MINUS . MultiplicativeExpr
+   56 UnaryExpr: PLUS PrimaryExpr .
 
-    LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
-
-    PrimaryExpr         go to state 115
-    MultiplicativeExpr  go to state 116
+    $default  reduce using rule 56 (UnaryExpr)
 
 
 state 79
 
-   60 AdditiveExpr: AdditiveExpr PLUS . MultiplicativeExpr
+   85 AssignExpr: UnaryExpr ASSIGN . AssignExpr
 
     LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    MINUS    shift, and go to state 30
+    NOT      shift, and go to state 31
+    PLUS     shift, and go to state 32
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 115
-    MultiplicativeExpr  go to state 117
+    PrimaryExpr         go to state 37
+    UnaryExpr           go to state 38
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 41
+    EqualExpr           go to state 42
+    AndExpr             go to state 43
+    ExclusiveOrExpr     go to state 44
+    InclusiveOrExpr     go to state 45
+    LogicalAndExpr      go to state 46
+    LogicalOrExpr       go to state 47
+    AssignExpr          go to state 115
 
 
 state 80
 
-   66 RelationalExpr: RelationalExpr GE . AdditiveExpr
+   60 MultiplicativeExpr: MultiplicativeExpr MUL . PrimaryExpr
 
     LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 115
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 118
+    PrimaryExpr  go to state 116
 
 
 state 81
 
-   64 RelationalExpr: RelationalExpr GT . AdditiveExpr
+   61 MultiplicativeExpr: MultiplicativeExpr DIV . PrimaryExpr
 
     LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 115
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 119
+    PrimaryExpr  go to state 117
 
 
 state 82
 
-   65 RelationalExpr: RelationalExpr LE . AdditiveExpr
+   62 MultiplicativeExpr: MultiplicativeExpr MOD . PrimaryExpr
 
     LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 115
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 120
+    PrimaryExpr  go to state 118
 
 
 state 83
 
-   63 RelationalExpr: RelationalExpr LT . AdditiveExpr
+   65 AdditiveExpr: AdditiveExpr MINUS . MultiplicativeExpr
 
     LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 115
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 121
+    PrimaryExpr         go to state 119
+    MultiplicativeExpr  go to state 120
 
 
 state 84
 
-   68 EqualExpr: EqualExpr EQ . RelationalExpr
+   64 AdditiveExpr: AdditiveExpr PLUS . MultiplicativeExpr
 
     LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 115
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 122
+    PrimaryExpr         go to state 119
+    MultiplicativeExpr  go to state 121
 
 
 state 85
 
-   69 EqualExpr: EqualExpr NE . RelationalExpr
+   70 RelationalExpr: RelationalExpr GE . AdditiveExpr
 
     LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 115
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 123
+    PrimaryExpr         go to state 119
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 122
 
 
 state 86
 
-   71 AndExpr: AndExpr BITWISEAND . EqualExpr
+   68 RelationalExpr: RelationalExpr GT . AdditiveExpr
 
     LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 115
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 37
-    EqualExpr           go to state 124
+    PrimaryExpr         go to state 119
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 123
 
 
 state 87
 
-   73 ExclusiveOrExpr: ExclusiveOrExpr BITWISEXOR . AndExpr
+   69 RelationalExpr: RelationalExpr LE . AdditiveExpr
 
     LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 115
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 37
-    EqualExpr           go to state 38
-    AndExpr             go to state 125
+    PrimaryExpr         go to state 119
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 124
 
 
 state 88
 
-   75 InclusiveOrExpr: InclusiveOrExpr BITWISEOR . ExclusiveOrExpr
+   67 RelationalExpr: RelationalExpr LT . AdditiveExpr
 
     LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 115
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 37
-    EqualExpr           go to state 38
-    AndExpr             go to state 39
-    ExclusiveOrExpr     go to state 126
+    PrimaryExpr         go to state 119
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 125
 
 
 state 89
 
-   77 LogicalAndExpr: LogicalAndExpr AND . InclusiveOrExpr
+   72 EqualExpr: EqualExpr EQ . RelationalExpr
 
     LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 115
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 37
-    EqualExpr           go to state 38
-    AndExpr             go to state 39
-    ExclusiveOrExpr     go to state 40
-    InclusiveOrExpr     go to state 127
+    PrimaryExpr         go to state 119
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 126
 
 
 state 90
 
-   79 LogicalOrExpr: LogicalOrExpr OR . LogicalAndExpr
+   73 EqualExpr: EqualExpr NE . RelationalExpr
 
     LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 115
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 37
-    EqualExpr           go to state 38
-    AndExpr             go to state 39
-    ExclusiveOrExpr     go to state 40
-    InclusiveOrExpr     go to state 41
-    LogicalAndExpr      go to state 128
+    PrimaryExpr         go to state 119
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 127
 
 
 state 91
+
+   75 AndExpr: AndExpr BITWISEAND . EqualExpr
+
+    LPAR     shift, and go to state 29
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
+
+    PrimaryExpr         go to state 119
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 41
+    EqualExpr           go to state 128
+
+
+state 92
+
+   77 ExclusiveOrExpr: ExclusiveOrExpr BITWISEXOR . AndExpr
+
+    LPAR     shift, and go to state 29
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
+
+    PrimaryExpr         go to state 119
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 41
+    EqualExpr           go to state 42
+    AndExpr             go to state 129
+
+
+state 93
+
+   79 InclusiveOrExpr: InclusiveOrExpr BITWISEOR . ExclusiveOrExpr
+
+    LPAR     shift, and go to state 29
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
+
+    PrimaryExpr         go to state 119
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 41
+    EqualExpr           go to state 42
+    AndExpr             go to state 43
+    ExclusiveOrExpr     go to state 130
+
+
+state 94
+
+   81 LogicalAndExpr: LogicalAndExpr AND . InclusiveOrExpr
+
+    LPAR     shift, and go to state 29
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
+
+    PrimaryExpr         go to state 119
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 41
+    EqualExpr           go to state 42
+    AndExpr             go to state 43
+    ExclusiveOrExpr     go to state 44
+    InclusiveOrExpr     go to state 131
+
+
+state 95
+
+   83 LogicalOrExpr: LogicalOrExpr OR . LogicalAndExpr
+
+    LPAR     shift, and go to state 29
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
+
+    PrimaryExpr         go to state 119
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 41
+    EqualExpr           go to state 42
+    AndExpr             go to state 43
+    ExclusiveOrExpr     go to state 44
+    InclusiveOrExpr     go to state 45
+    LogicalAndExpr      go to state 132
+
+
+state 96
+
+   87 Expr: Expr COMMA . AssignExpr
+
+    LPAR     shift, and go to state 29
+    MINUS    shift, and go to state 30
+    NOT      shift, and go to state 31
+    PLUS     shift, and go to state 32
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
+
+    PrimaryExpr         go to state 37
+    UnaryExpr           go to state 38
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 41
+    EqualExpr           go to state 42
+    AndExpr             go to state 43
+    ExclusiveOrExpr     go to state 44
+    InclusiveOrExpr     go to state 45
+    LogicalAndExpr      go to state 46
+    LogicalOrExpr       go to state 47
+    AssignExpr          go to state 133
+
+
+state 97
 
     9 ParameterList: ParameterList COMMA . ParameterDeclaration
 
@@ -1384,605 +1493,565 @@ state 91
     DOUBLE  shift, and go to state 4
     VOID    shift, and go to state 5
 
-    ParameterDeclaration  go to state 129
-    TypeSpec              go to state 48
+    ParameterDeclaration  go to state 134
+    TypeSpec              go to state 52
 
 
-state 92
+state 98
 
    26 FunctionDeclarator: ID LPAR ParameterList RPAR .
 
     $default  reduce using rule 26 (FunctionDeclarator)
 
 
-state 93
+state 99
 
    11 ParameterDeclaration: TypeSpec ID .
 
     $default  reduce using rule 11 (ParameterDeclaration)
 
 
-state 94
+state 100
 
    49 Expr_Stm: error SEMI .
 
     $default  reduce using rule 49 (Expr_Stm)
 
 
-state 95
+state 101
 
    52 Iter_Stm: WHILE LPAR . Expr RPAR Statement
 
     LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    MINUS    shift, and go to state 30
+    NOT      shift, and go to state 31
+    PLUS     shift, and go to state 32
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 34
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 37
-    EqualExpr           go to state 38
-    AndExpr             go to state 39
-    ExclusiveOrExpr     go to state 40
-    InclusiveOrExpr     go to state 41
-    LogicalAndExpr      go to state 42
-    LogicalOrExpr       go to state 43
-    ConditionalExpr     go to state 44
-    AssignExpr          go to state 65
-    Expr                go to state 130
+    PrimaryExpr         go to state 37
+    UnaryExpr           go to state 38
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 41
+    EqualExpr           go to state 42
+    AndExpr             go to state 43
+    ExclusiveOrExpr     go to state 44
+    InclusiveOrExpr     go to state 45
+    LogicalAndExpr      go to state 46
+    LogicalOrExpr       go to state 47
+    AssignExpr          go to state 48
+    Expr                go to state 135
 
 
-state 96
+state 102
 
    50 Select_Stm: IF LPAR . Expr RPAR Statement
    51           | IF LPAR . Expr RPAR Statement ELSE Statement
 
     LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    MINUS    shift, and go to state 30
+    NOT      shift, and go to state 31
+    PLUS     shift, and go to state 32
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 34
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 37
-    EqualExpr           go to state 38
-    AndExpr             go to state 39
-    ExclusiveOrExpr     go to state 40
-    InclusiveOrExpr     go to state 41
-    LogicalAndExpr      go to state 42
-    LogicalOrExpr       go to state 43
-    ConditionalExpr     go to state 44
-    AssignExpr          go to state 65
-    Expr                go to state 131
+    PrimaryExpr         go to state 37
+    UnaryExpr           go to state 38
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 41
+    EqualExpr           go to state 42
+    AndExpr             go to state 43
+    ExclusiveOrExpr     go to state 44
+    InclusiveOrExpr     go to state 45
+    LogicalAndExpr      go to state 46
+    LogicalOrExpr       go to state 47
+    AssignExpr          go to state 48
+    Expr                go to state 136
 
 
-state 97
+state 103
 
    53 Jump_Stm: RETURN SEMI .
 
     $default  reduce using rule 53 (Jump_Stm)
 
 
-state 98
+state 104
 
    54 Jump_Stm: RETURN Expr . SEMI
-   85 Expr: Expr . COMMA AssignExpr
+   87 Expr: Expr . COMMA AssignExpr
 
-    COMMA  shift, and go to state 105
-    SEMI   shift, and go to state 132
+    COMMA  shift, and go to state 96
+    SEMI   shift, and go to state 137
 
 
-state 99
+state 105
 
    46 Compound_Stm: LBRACE error . RBRACE
    49 Expr_Stm: error . SEMI
 
-    RBRACE  shift, and go to state 133
-    SEMI    shift, and go to state 94
+    RBRACE  shift, and go to state 138
+    SEMI    shift, and go to state 100
 
 
-state 100
+state 106
 
    44 Compound_Stm: LBRACE RBRACE .
 
     $default  reduce using rule 44 (Compound_Stm)
 
 
-state 101
+state 107
 
    45 Compound_Stm: LBRACE Statement . RBRACE
 
-    RBRACE  shift, and go to state 134
+    RBRACE  shift, and go to state 139
 
 
-state 102
+state 108
 
    20 FunctionBody: LBRACE DeclarationsAndStatements RBRACE .
 
     $default  reduce using rule 20 (FunctionBody)
 
 
-state 103
+state 109
 
    22 DeclarationsAndStatements: Declaration DeclarationsAndStatements .
 
     $default  reduce using rule 22 (DeclarationsAndStatements)
 
 
-state 104
+state 110
 
    21 DeclarationsAndStatements: Statement DeclarationsAndStatements .
 
     $default  reduce using rule 21 (DeclarationsAndStatements)
 
 
-state 105
-
-   85 Expr: Expr COMMA . AssignExpr
-
-    LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
-
-    PrimaryExpr         go to state 34
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 37
-    EqualExpr           go to state 38
-    AndExpr             go to state 39
-    ExclusiveOrExpr     go to state 40
-    InclusiveOrExpr     go to state 41
-    LogicalAndExpr      go to state 42
-    LogicalOrExpr       go to state 43
-    ConditionalExpr     go to state 44
-    AssignExpr          go to state 135
-
-
-state 106
+state 111
 
    48 Expr_Stm: Expr SEMI .
 
     $default  reduce using rule 48 (Expr_Stm)
 
 
-state 107
+state 112
 
    31 DeclarationList: DeclarationList COMMA Declarator .
 
     $default  reduce using rule 31 (DeclarationList)
 
 
-state 108
+state 113
 
     7 PrimaryExpr: LPAR error RPAR .
 
     $default  reduce using rule 7 (PrimaryExpr)
 
 
-state 109
+state 114
 
     6 PrimaryExpr: LPAR Expr RPAR .
 
     $default  reduce using rule 6 (PrimaryExpr)
 
 
-state 110
-
-   82 AssignExpr: PrimaryExpr ASSIGN AssignExpr .
-
-    $default  reduce using rule 82 (AssignExpr)
-
-
-state 111
-
-   83 AssignExpr: PrimaryExpr NOT ASSIGN . AssignExpr
-
-    LPAR     shift, and go to state 29
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
-
-    PrimaryExpr         go to state 34
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 37
-    EqualExpr           go to state 38
-    AndExpr             go to state 39
-    ExclusiveOrExpr     go to state 40
-    InclusiveOrExpr     go to state 41
-    LogicalAndExpr      go to state 42
-    LogicalOrExpr       go to state 43
-    ConditionalExpr     go to state 44
-    AssignExpr          go to state 136
-
-
-state 112
-
-   56 MultiplicativeExpr: MultiplicativeExpr MUL PrimaryExpr .
-
-    $default  reduce using rule 56 (MultiplicativeExpr)
-
-
-state 113
-
-   57 MultiplicativeExpr: MultiplicativeExpr DIV PrimaryExpr .
-
-    $default  reduce using rule 57 (MultiplicativeExpr)
-
-
-state 114
-
-   58 MultiplicativeExpr: MultiplicativeExpr MOD PrimaryExpr .
-
-    $default  reduce using rule 58 (MultiplicativeExpr)
-
-
 state 115
 
-   55 MultiplicativeExpr: PrimaryExpr .
+   85 AssignExpr: UnaryExpr ASSIGN AssignExpr .
 
-    $default  reduce using rule 55 (MultiplicativeExpr)
+    $default  reduce using rule 85 (AssignExpr)
 
 
 state 116
 
-   56 MultiplicativeExpr: MultiplicativeExpr . MUL PrimaryExpr
-   57                   | MultiplicativeExpr . DIV PrimaryExpr
-   58                   | MultiplicativeExpr . MOD PrimaryExpr
-   61 AdditiveExpr: AdditiveExpr MINUS MultiplicativeExpr .
+   60 MultiplicativeExpr: MultiplicativeExpr MUL PrimaryExpr .
 
-    MUL  shift, and go to state 75
-    DIV  shift, and go to state 76
-    MOD  shift, and go to state 77
-
-    $default  reduce using rule 61 (AdditiveExpr)
+    $default  reduce using rule 60 (MultiplicativeExpr)
 
 
 state 117
 
-   56 MultiplicativeExpr: MultiplicativeExpr . MUL PrimaryExpr
-   57                   | MultiplicativeExpr . DIV PrimaryExpr
-   58                   | MultiplicativeExpr . MOD PrimaryExpr
-   60 AdditiveExpr: AdditiveExpr PLUS MultiplicativeExpr .
+   61 MultiplicativeExpr: MultiplicativeExpr DIV PrimaryExpr .
 
-    MUL  shift, and go to state 75
-    DIV  shift, and go to state 76
-    MOD  shift, and go to state 77
-
-    $default  reduce using rule 60 (AdditiveExpr)
+    $default  reduce using rule 61 (MultiplicativeExpr)
 
 
 state 118
 
-   60 AdditiveExpr: AdditiveExpr . PLUS MultiplicativeExpr
-   61             | AdditiveExpr . MINUS MultiplicativeExpr
-   66 RelationalExpr: RelationalExpr GE AdditiveExpr .
+   62 MultiplicativeExpr: MultiplicativeExpr MOD PrimaryExpr .
 
-    MINUS  shift, and go to state 78
-    PLUS   shift, and go to state 79
-
-    $default  reduce using rule 66 (RelationalExpr)
+    $default  reduce using rule 62 (MultiplicativeExpr)
 
 
 state 119
 
-   60 AdditiveExpr: AdditiveExpr . PLUS MultiplicativeExpr
-   61             | AdditiveExpr . MINUS MultiplicativeExpr
-   64 RelationalExpr: RelationalExpr GT AdditiveExpr .
+   59 MultiplicativeExpr: PrimaryExpr .
 
-    MINUS  shift, and go to state 78
-    PLUS   shift, and go to state 79
-
-    $default  reduce using rule 64 (RelationalExpr)
+    $default  reduce using rule 59 (MultiplicativeExpr)
 
 
 state 120
 
-   60 AdditiveExpr: AdditiveExpr . PLUS MultiplicativeExpr
-   61             | AdditiveExpr . MINUS MultiplicativeExpr
-   65 RelationalExpr: RelationalExpr LE AdditiveExpr .
+   60 MultiplicativeExpr: MultiplicativeExpr . MUL PrimaryExpr
+   61                   | MultiplicativeExpr . DIV PrimaryExpr
+   62                   | MultiplicativeExpr . MOD PrimaryExpr
+   65 AdditiveExpr: AdditiveExpr MINUS MultiplicativeExpr .
 
-    MINUS  shift, and go to state 78
-    PLUS   shift, and go to state 79
+    MUL  shift, and go to state 80
+    DIV  shift, and go to state 81
+    MOD  shift, and go to state 82
 
-    $default  reduce using rule 65 (RelationalExpr)
+    $default  reduce using rule 65 (AdditiveExpr)
 
 
 state 121
 
-   60 AdditiveExpr: AdditiveExpr . PLUS MultiplicativeExpr
-   61             | AdditiveExpr . MINUS MultiplicativeExpr
-   63 RelationalExpr: RelationalExpr LT AdditiveExpr .
+   60 MultiplicativeExpr: MultiplicativeExpr . MUL PrimaryExpr
+   61                   | MultiplicativeExpr . DIV PrimaryExpr
+   62                   | MultiplicativeExpr . MOD PrimaryExpr
+   64 AdditiveExpr: AdditiveExpr PLUS MultiplicativeExpr .
 
-    MINUS  shift, and go to state 78
-    PLUS   shift, and go to state 79
+    MUL  shift, and go to state 80
+    DIV  shift, and go to state 81
+    MOD  shift, and go to state 82
 
-    $default  reduce using rule 63 (RelationalExpr)
+    $default  reduce using rule 64 (AdditiveExpr)
 
 
 state 122
 
-   63 RelationalExpr: RelationalExpr . LT AdditiveExpr
-   64               | RelationalExpr . GT AdditiveExpr
-   65               | RelationalExpr . LE AdditiveExpr
-   66               | RelationalExpr . GE AdditiveExpr
-   68 EqualExpr: EqualExpr EQ RelationalExpr .
+   64 AdditiveExpr: AdditiveExpr . PLUS MultiplicativeExpr
+   65             | AdditiveExpr . MINUS MultiplicativeExpr
+   70 RelationalExpr: RelationalExpr GE AdditiveExpr .
 
-    GE  shift, and go to state 80
-    GT  shift, and go to state 81
-    LE  shift, and go to state 82
-    LT  shift, and go to state 83
+    MINUS  shift, and go to state 83
+    PLUS   shift, and go to state 84
 
-    $default  reduce using rule 68 (EqualExpr)
+    $default  reduce using rule 70 (RelationalExpr)
 
 
 state 123
 
-   63 RelationalExpr: RelationalExpr . LT AdditiveExpr
-   64               | RelationalExpr . GT AdditiveExpr
-   65               | RelationalExpr . LE AdditiveExpr
-   66               | RelationalExpr . GE AdditiveExpr
-   69 EqualExpr: EqualExpr NE RelationalExpr .
+   64 AdditiveExpr: AdditiveExpr . PLUS MultiplicativeExpr
+   65             | AdditiveExpr . MINUS MultiplicativeExpr
+   68 RelationalExpr: RelationalExpr GT AdditiveExpr .
 
-    GE  shift, and go to state 80
-    GT  shift, and go to state 81
-    LE  shift, and go to state 82
-    LT  shift, and go to state 83
+    MINUS  shift, and go to state 83
+    PLUS   shift, and go to state 84
 
-    $default  reduce using rule 69 (EqualExpr)
+    $default  reduce using rule 68 (RelationalExpr)
 
 
 state 124
 
-   68 EqualExpr: EqualExpr . EQ RelationalExpr
-   69          | EqualExpr . NE RelationalExpr
-   71 AndExpr: AndExpr BITWISEAND EqualExpr .
+   64 AdditiveExpr: AdditiveExpr . PLUS MultiplicativeExpr
+   65             | AdditiveExpr . MINUS MultiplicativeExpr
+   69 RelationalExpr: RelationalExpr LE AdditiveExpr .
 
-    EQ  shift, and go to state 84
-    NE  shift, and go to state 85
+    MINUS  shift, and go to state 83
+    PLUS   shift, and go to state 84
 
-    $default  reduce using rule 71 (AndExpr)
+    $default  reduce using rule 69 (RelationalExpr)
 
 
 state 125
 
-   71 AndExpr: AndExpr . BITWISEAND EqualExpr
-   73 ExclusiveOrExpr: ExclusiveOrExpr BITWISEXOR AndExpr .
+   64 AdditiveExpr: AdditiveExpr . PLUS MultiplicativeExpr
+   65             | AdditiveExpr . MINUS MultiplicativeExpr
+   67 RelationalExpr: RelationalExpr LT AdditiveExpr .
 
-    BITWISEAND  shift, and go to state 86
+    MINUS  shift, and go to state 83
+    PLUS   shift, and go to state 84
 
-    $default  reduce using rule 73 (ExclusiveOrExpr)
+    $default  reduce using rule 67 (RelationalExpr)
 
 
 state 126
 
-   73 ExclusiveOrExpr: ExclusiveOrExpr . BITWISEXOR AndExpr
-   75 InclusiveOrExpr: InclusiveOrExpr BITWISEOR ExclusiveOrExpr .
+   67 RelationalExpr: RelationalExpr . LT AdditiveExpr
+   68               | RelationalExpr . GT AdditiveExpr
+   69               | RelationalExpr . LE AdditiveExpr
+   70               | RelationalExpr . GE AdditiveExpr
+   72 EqualExpr: EqualExpr EQ RelationalExpr .
 
-    BITWISEXOR  shift, and go to state 87
+    GE  shift, and go to state 85
+    GT  shift, and go to state 86
+    LE  shift, and go to state 87
+    LT  shift, and go to state 88
 
-    $default  reduce using rule 75 (InclusiveOrExpr)
+    $default  reduce using rule 72 (EqualExpr)
 
 
 state 127
 
-   75 InclusiveOrExpr: InclusiveOrExpr . BITWISEOR ExclusiveOrExpr
-   77 LogicalAndExpr: LogicalAndExpr AND InclusiveOrExpr .
+   67 RelationalExpr: RelationalExpr . LT AdditiveExpr
+   68               | RelationalExpr . GT AdditiveExpr
+   69               | RelationalExpr . LE AdditiveExpr
+   70               | RelationalExpr . GE AdditiveExpr
+   73 EqualExpr: EqualExpr NE RelationalExpr .
 
-    BITWISEOR  shift, and go to state 88
+    GE  shift, and go to state 85
+    GT  shift, and go to state 86
+    LE  shift, and go to state 87
+    LT  shift, and go to state 88
 
-    $default  reduce using rule 77 (LogicalAndExpr)
+    $default  reduce using rule 73 (EqualExpr)
 
 
 state 128
 
-   77 LogicalAndExpr: LogicalAndExpr . AND InclusiveOrExpr
-   79 LogicalOrExpr: LogicalOrExpr OR LogicalAndExpr .
+   72 EqualExpr: EqualExpr . EQ RelationalExpr
+   73          | EqualExpr . NE RelationalExpr
+   75 AndExpr: AndExpr BITWISEAND EqualExpr .
 
-    AND  shift, and go to state 89
+    EQ  shift, and go to state 89
+    NE  shift, and go to state 90
 
-    $default  reduce using rule 79 (LogicalOrExpr)
+    $default  reduce using rule 75 (AndExpr)
 
 
 state 129
+
+   75 AndExpr: AndExpr . BITWISEAND EqualExpr
+   77 ExclusiveOrExpr: ExclusiveOrExpr BITWISEXOR AndExpr .
+
+    BITWISEAND  shift, and go to state 91
+
+    $default  reduce using rule 77 (ExclusiveOrExpr)
+
+
+state 130
+
+   77 ExclusiveOrExpr: ExclusiveOrExpr . BITWISEXOR AndExpr
+   79 InclusiveOrExpr: InclusiveOrExpr BITWISEOR ExclusiveOrExpr .
+
+    BITWISEXOR  shift, and go to state 92
+
+    $default  reduce using rule 79 (InclusiveOrExpr)
+
+
+state 131
+
+   79 InclusiveOrExpr: InclusiveOrExpr . BITWISEOR ExclusiveOrExpr
+   81 LogicalAndExpr: LogicalAndExpr AND InclusiveOrExpr .
+
+    BITWISEOR  shift, and go to state 93
+
+    $default  reduce using rule 81 (LogicalAndExpr)
+
+
+state 132
+
+   81 LogicalAndExpr: LogicalAndExpr . AND InclusiveOrExpr
+   83 LogicalOrExpr: LogicalOrExpr OR LogicalAndExpr .
+
+    AND  shift, and go to state 94
+
+    $default  reduce using rule 83 (LogicalOrExpr)
+
+
+state 133
+
+   87 Expr: Expr COMMA AssignExpr .
+
+    $default  reduce using rule 87 (Expr)
+
+
+state 134
 
     9 ParameterList: ParameterList COMMA ParameterDeclaration .
 
     $default  reduce using rule 9 (ParameterList)
 
 
-state 130
+state 135
 
    52 Iter_Stm: WHILE LPAR Expr . RPAR Statement
-   85 Expr: Expr . COMMA AssignExpr
+   87 Expr: Expr . COMMA AssignExpr
 
-    COMMA  shift, and go to state 105
-    RPAR   shift, and go to state 137
+    COMMA  shift, and go to state 96
+    RPAR   shift, and go to state 140
 
 
-state 131
+state 136
 
    50 Select_Stm: IF LPAR Expr . RPAR Statement
    51           | IF LPAR Expr . RPAR Statement ELSE Statement
-   85 Expr: Expr . COMMA AssignExpr
+   87 Expr: Expr . COMMA AssignExpr
 
-    COMMA  shift, and go to state 105
-    RPAR   shift, and go to state 138
+    COMMA  shift, and go to state 96
+    RPAR   shift, and go to state 141
 
 
-state 132
+state 137
 
    54 Jump_Stm: RETURN Expr SEMI .
 
     $default  reduce using rule 54 (Jump_Stm)
 
 
-state 133
+state 138
 
    46 Compound_Stm: LBRACE error RBRACE .
 
     $default  reduce using rule 46 (Compound_Stm)
 
 
-state 134
+state 139
 
    45 Compound_Stm: LBRACE Statement RBRACE .
 
     $default  reduce using rule 45 (Compound_Stm)
 
 
-state 135
-
-   85 Expr: Expr COMMA AssignExpr .
-
-    $default  reduce using rule 85 (Expr)
-
-
-state 136
-
-   83 AssignExpr: PrimaryExpr NOT ASSIGN AssignExpr .
-
-    $default  reduce using rule 83 (AssignExpr)
-
-
-state 137
+state 140
 
    52 Iter_Stm: WHILE LPAR Expr RPAR . Statement
 
-    error    shift, and go to state 49
-    WHILE    shift, and go to state 50
-    IF       shift, and go to state 51
-    RETURN   shift, and go to state 52
-    LBRACE   shift, and go to state 53
+    error    shift, and go to state 53
+    WHILE    shift, and go to state 54
+    IF       shift, and go to state 55
+    RETURN   shift, and go to state 56
+    LBRACE   shift, and go to state 57
     LPAR     shift, and go to state 29
-    SEMI     shift, and go to state 55
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    MINUS    shift, and go to state 30
+    NOT      shift, and go to state 31
+    PLUS     shift, and go to state 32
+    SEMI     shift, and go to state 59
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 34
-    Statement           go to state 139
-    Compound_Stm        go to state 60
-    Expr_Stm            go to state 61
-    Select_Stm          go to state 62
-    Iter_Stm            go to state 63
-    Jump_Stm            go to state 64
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 37
-    EqualExpr           go to state 38
-    AndExpr             go to state 39
-    ExclusiveOrExpr     go to state 40
-    InclusiveOrExpr     go to state 41
-    LogicalAndExpr      go to state 42
-    LogicalOrExpr       go to state 43
-    ConditionalExpr     go to state 44
-    AssignExpr          go to state 65
-    Expr                go to state 66
+    PrimaryExpr         go to state 37
+    Statement           go to state 142
+    Compound_Stm        go to state 64
+    Expr_Stm            go to state 65
+    Select_Stm          go to state 66
+    Iter_Stm            go to state 67
+    Jump_Stm            go to state 68
+    UnaryExpr           go to state 38
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 41
+    EqualExpr           go to state 42
+    AndExpr             go to state 43
+    ExclusiveOrExpr     go to state 44
+    InclusiveOrExpr     go to state 45
+    LogicalAndExpr      go to state 46
+    LogicalOrExpr       go to state 47
+    AssignExpr          go to state 48
+    Expr                go to state 69
 
 
-state 138
+state 141
 
    50 Select_Stm: IF LPAR Expr RPAR . Statement
    51           | IF LPAR Expr RPAR . Statement ELSE Statement
 
-    error    shift, and go to state 49
-    WHILE    shift, and go to state 50
-    IF       shift, and go to state 51
-    RETURN   shift, and go to state 52
-    LBRACE   shift, and go to state 53
+    error    shift, and go to state 53
+    WHILE    shift, and go to state 54
+    IF       shift, and go to state 55
+    RETURN   shift, and go to state 56
+    LBRACE   shift, and go to state 57
     LPAR     shift, and go to state 29
-    SEMI     shift, and go to state 55
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    MINUS    shift, and go to state 30
+    NOT      shift, and go to state 31
+    PLUS     shift, and go to state 32
+    SEMI     shift, and go to state 59
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 34
-    Statement           go to state 140
-    Compound_Stm        go to state 60
-    Expr_Stm            go to state 61
-    Select_Stm          go to state 62
-    Iter_Stm            go to state 63
-    Jump_Stm            go to state 64
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 37
-    EqualExpr           go to state 38
-    AndExpr             go to state 39
-    ExclusiveOrExpr     go to state 40
-    InclusiveOrExpr     go to state 41
-    LogicalAndExpr      go to state 42
-    LogicalOrExpr       go to state 43
-    ConditionalExpr     go to state 44
-    AssignExpr          go to state 65
-    Expr                go to state 66
+    PrimaryExpr         go to state 37
+    Statement           go to state 143
+    Compound_Stm        go to state 64
+    Expr_Stm            go to state 65
+    Select_Stm          go to state 66
+    Iter_Stm            go to state 67
+    Jump_Stm            go to state 68
+    UnaryExpr           go to state 38
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 41
+    EqualExpr           go to state 42
+    AndExpr             go to state 43
+    ExclusiveOrExpr     go to state 44
+    InclusiveOrExpr     go to state 45
+    LogicalAndExpr      go to state 46
+    LogicalOrExpr       go to state 47
+    AssignExpr          go to state 48
+    Expr                go to state 69
 
 
-state 139
+state 142
 
    52 Iter_Stm: WHILE LPAR Expr RPAR Statement .
 
     $default  reduce using rule 52 (Iter_Stm)
 
 
-state 140
+state 143
 
    50 Select_Stm: IF LPAR Expr RPAR Statement .
    51           | IF LPAR Expr RPAR Statement . ELSE Statement
 
-    ELSE  shift, and go to state 141
+    ELSE  shift, and go to state 144
 
     ELSE      [reduce using rule 50 (Select_Stm)]
     $default  reduce using rule 50 (Select_Stm)
 
 
-state 141
+state 144
 
    51 Select_Stm: IF LPAR Expr RPAR Statement ELSE . Statement
 
-    error    shift, and go to state 49
-    WHILE    shift, and go to state 50
-    IF       shift, and go to state 51
-    RETURN   shift, and go to state 52
-    LBRACE   shift, and go to state 53
+    error    shift, and go to state 53
+    WHILE    shift, and go to state 54
+    IF       shift, and go to state 55
+    RETURN   shift, and go to state 56
+    LBRACE   shift, and go to state 57
     LPAR     shift, and go to state 29
-    SEMI     shift, and go to state 55
-    ID       shift, and go to state 30
-    CHRLIT   shift, and go to state 31
-    REALLIT  shift, and go to state 32
-    INTLIT   shift, and go to state 33
+    MINUS    shift, and go to state 30
+    NOT      shift, and go to state 31
+    PLUS     shift, and go to state 32
+    SEMI     shift, and go to state 59
+    ID       shift, and go to state 33
+    CHRLIT   shift, and go to state 34
+    REALLIT  shift, and go to state 35
+    INTLIT   shift, and go to state 36
 
-    PrimaryExpr         go to state 34
-    Statement           go to state 142
-    Compound_Stm        go to state 60
-    Expr_Stm            go to state 61
-    Select_Stm          go to state 62
-    Iter_Stm            go to state 63
-    Jump_Stm            go to state 64
-    MultiplicativeExpr  go to state 35
-    AdditiveExpr        go to state 36
-    RelationalExpr      go to state 37
-    EqualExpr           go to state 38
-    AndExpr             go to state 39
-    ExclusiveOrExpr     go to state 40
-    InclusiveOrExpr     go to state 41
-    LogicalAndExpr      go to state 42
-    LogicalOrExpr       go to state 43
-    ConditionalExpr     go to state 44
-    AssignExpr          go to state 65
-    Expr                go to state 66
+    PrimaryExpr         go to state 37
+    Statement           go to state 145
+    Compound_Stm        go to state 64
+    Expr_Stm            go to state 65
+    Select_Stm          go to state 66
+    Iter_Stm            go to state 67
+    Jump_Stm            go to state 68
+    UnaryExpr           go to state 38
+    MultiplicativeExpr  go to state 39
+    AdditiveExpr        go to state 40
+    RelationalExpr      go to state 41
+    EqualExpr           go to state 42
+    AndExpr             go to state 43
+    ExclusiveOrExpr     go to state 44
+    InclusiveOrExpr     go to state 45
+    LogicalAndExpr      go to state 46
+    LogicalOrExpr       go to state 47
+    AssignExpr          go to state 48
+    Expr                go to state 69
 
 
-state 142
+state 145
 
    51 Select_Stm: IF LPAR Expr RPAR Statement ELSE Statement .
 

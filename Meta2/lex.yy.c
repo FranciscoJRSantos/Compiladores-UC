@@ -697,7 +697,7 @@ int column = 1;
 int line = 1;
 int curr_column = 1;
 int curr_line = 1;
-int flag = 0;
+int flag;
 int error = -1;
 
 void print_text(char * text);
@@ -1198,17 +1198,17 @@ YY_RULE_SETUP
 case 43:
 YY_RULE_SETUP
 #line 86 "uccompiler.l"
-{ column+=yyleng; print_content("ID",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext); } return ID; }
+{ column+=yyleng; print_content("ID",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext); return ID; }}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
 #line 87 "uccompiler.l"
-{ column+=yyleng; print_content("INTLIT",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext); } return INTLIT; }
+{ column+=yyleng; print_content("INTLIT",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext);  return INTLIT; } }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
 #line 88 "uccompiler.l"
-{ column+=yyleng; print_content("REALLIT",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext); } return REALLIT; }
+{ column+=yyleng; print_content("REALLIT",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext);  return REALLIT; } }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
@@ -1234,7 +1234,7 @@ YY_RULE_SETUP
 case 50:
 YY_RULE_SETUP
 #line 94 "uccompiler.l"
-{ BEGIN 0; if(error == 0) { print_content("CHRLIT",yytext); } else { printf("Line %d, col %d: invalid char constant (%s)\n",curr_line,curr_column,yytext);} column+=yyleng; if (flag == 2) { yylval.cval = (char*)strdup(yytext); } return CHRLIT; }
+{ BEGIN 0; if(error == 0) { print_content("CHRLIT",yytext); } else { printf("Line %d, col %d: invalid char constant (%s)\n",curr_line,curr_column,yytext);} column+=yyleng; if (flag == 2) { yylval.cval = (char*)strdup(yytext);  return CHRLIT; } }
 	YY_BREAK
 case YY_STATE_EOF(CHARSTATE):
 #line 95 "uccompiler.l"
