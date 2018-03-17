@@ -85,7 +85,7 @@ FunctionDeclarator
 
 Declaration
         : TypeSpec Declarator SEMI                      { $$ = add_brother($1,$2); }
-        | TypeSpec Declarator DeclarationList SEMI      { $$ = add_brother($1,$2); }
+        | TypeSpec Declarator DeclarationList SEMI      { $$ = add_brother($1,$2); add_brother($1,$3); add_brother($2,$3); }
         | TypeSpec error SEMI                           { $$ = NULL; }
         ;
 
@@ -95,7 +95,7 @@ DeclarationList
         ;
 
 Declarator
-        : ID ASSIGN AssignExpr                         { aux = create_node("Id",$1,0); if($3 != NULL) $$ = create_node("Declaration",NULL,1,aux); }
+        : ID ASSIGN AssignExpr                         { aux = create_node("Id",$1,0); if($3 != NULL) $$ = create_node("Declaration",NULL,2,aux,$3); }
         | ID                                           { $$ = create_node("Id",$1,0); } 
         ;
 
@@ -161,8 +161,7 @@ ArgExpr
         ;
 
 PostfixExpr
-        : PrimaryExpr                                  { $$ = $1; } 
-        | PostfixExpr LPAR ArgExpr RPAR                { $$ = $1; } 
+        : ID LPAR ArgExpr RPAR                         { aux = create_node("Id",$1,0); add_brother(aux,$3); $$ = create_node("Call",NULL,2,$1,$3); } 
         ;
         
 
