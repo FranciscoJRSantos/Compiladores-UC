@@ -38,7 +38,7 @@ PrimaryExpr
 
 ParameterList
         : ParameterDeclaration                          { $$ = create_node("ParamList",NULL,1,$1); }
-        | ParameterList COMMA ParameterDeclaration      { $$ = create_node("ParamList",NULL,2,$1,$3); aux = create_node("Comma",NULL,1,$3); add_brother($1,aux); }
+        | ParameterList COMMA ParameterDeclaration      { $$ = create_node("ParamList",NULL,1,$3); aux = create_node("Comma",NULL,1,$3); add_brother($1,aux); }
         ;
         
 ParameterDeclaration
@@ -65,14 +65,14 @@ FunctionBody
         ;
 
 DeclarationsAndStatements
-        : Statement DeclarationsAndStatements          { $$ = add_brother($1,$2);} 
-        | Declaration DeclarationsAndStatements        { $$ = add_brother($1,$2);} 
-        | Statement                                    { $$ = $1; } 
-        | Declaration                                  { $$ = $1; } 
+        : Statement DeclarationsAndStatements           { $$ = add_brother($1,$2);} 
+        | Declaration DeclarationsAndStatements         { $$ = add_brother($1,$2);} 
+        | Statement                                     { $$ = $1; } 
+        | Declaration                                   { $$ = $1; } 
         ;
 
 FunctionDeclaration
-        : TypeSpec FunctionDeclarator SEMI              { $$ = create_node("FuncDeclaration",NULL,2,$1,$2); create_node("Comma",NULL,0); }
+        : TypeSpec FunctionDeclarator SEMI              { $$ = create_node("FuncDeclaration",NULL,2,$1,$2); create_node("Semi",NULL,0); }
         ;
 
 FunctionDeclarator
@@ -87,7 +87,7 @@ Declaration
 
 DeclarationList
         : COMMA Declarator                              { $$ = $2; }
-        | DeclarationList COMMA Declarator              { $$ = add_brother($1,$3); }
+        | DeclarationList COMMA Declarator              { $$ = add_brother($1,$3); create_node("Comma",NULL,0); }
         ;
 
 Declarator
@@ -119,7 +119,7 @@ Compound_Stm
         ;
 
 BlockItemStm
-        : Statement BlockItemStm                        { $$ = create_node("StatList",NULL,1,$2); }
+        : Statement BlockItemStm                        { $$ = create_node("StatList",NULL,1,$2); add_brother($1,$2); }
         | Statement                                     { $$ = $1; }
         ;
 
@@ -163,7 +163,7 @@ ArgExpr
 
 FunctionCallExpr
         : PrimaryExpr                                   { $$ = $1; }
-        | FunctionCallExpr LPAR ArgExpr RPAR            { aux = add_brother($1,$3); $$ = create_node("Call",NULL,2,aux,$3); } 
+        | FunctionCallExpr LPAR ArgExpr RPAR            { aux = add_brother($1,$3); $$ = create_node("Call",NULL,1,$3); } 
         | FunctionCallExpr LPAR error RPAR              { $$ = NULL; tree_flag = 0; }
         ;
         

@@ -65,8 +65,11 @@ void print_tree(node n, int depth) {
     
     if (n && n->brother != NULL)
         print_tree(n->brother,depth);
-
-    free(n->cval);
-    free(n->label);
-    free(n); 
+    
+    if (n->cval != NULL)
+        free(n->cval);
+    if (n->label != NULL)
+        free(n->label);
+    if (n != NULL)
+        free(n); 
 }
