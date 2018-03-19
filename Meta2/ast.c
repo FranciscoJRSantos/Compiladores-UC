@@ -5,16 +5,16 @@ node create_node (char* label, char* cval, int n_sons, ...) {
     va_start(args,n_sons);
     
     // Create new node
-    node new;
-    new = (node) malloc (sizeof(struct no));
-    new->label = strdup(label);
-    new->son = NULL;
-    new->brother = NULL;
-    if (cval == NULL) new->cval = cval;
-    else new->cval = strdup(cval);
+    node new_node = NULL;
+    new_node = (node) malloc (sizeof(struct no));
+    new_node->label = strdup(label);
+    new_node->son = NULL;
+    new_node->brother = NULL;
+    if (cval == NULL) new_node->cval = cval;
+    else new_node->cval = strdup(cval);
 
     
-    node aux_son;
+    node aux_son = NULL;
     for (int i=0; i < n_sons; i++) {
         node son = va_arg(args, node);
 
@@ -22,8 +22,8 @@ node create_node (char* label, char* cval, int n_sons, ...) {
         if (son == NULL) continue;
         
         // Add son
-        if(new->son == NULL) {
-            new->son = son;
+        if(new_node->son == NULL) {
+            new_node->son = son;
             aux_son = son;
         }
         else {
@@ -33,7 +33,7 @@ node create_node (char* label, char* cval, int n_sons, ...) {
     }
     
     va_end(args);
-    return new;
+    return new_node;
 }
 
 node add_brother(node b1, node b2) {
