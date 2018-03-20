@@ -5,8 +5,8 @@
     #include "ast.h"
     int flag = 0,tree_flag = 1;
 
-    node root;
-    node aux;
+    node root = NULL;
+    node aux = NULL;
 
 %}
 
@@ -19,10 +19,12 @@ struct no * node;
 %token CHAR ELSE WHILE IF INT SHORT DOUBLE RETURN VOID BITWISEAND BITWISEOR BITWISEXOR AND ASSIGN MUL COMMA DIV EQ GE GT LBRACE LE LPAR LT MINUS MOD NE NOT OR PLUS RBRACE RPAR SEMI 
 %token <cval> ID CHRLIT REALLIT RESERVED INTLIT
 
-%type <node> Program PrimaryExpr ParameterList ParameterDeclaration FunctionsAndDeclarations FunctionDeclaration FunctionDefinition FunctionBody FunctionDeclarator Statement AndExpr InclusiveOrExpr ExclusiveOrExpr Declaration Declarator DeclarationList AssignExpr LogicalOrExpr LogicalAndExpr AdditiveExpr MultiplicativeExpr Jump_Stm Iter_Stm Compound_Stm TypeSpec Expr_Stm Expr DeclarationsAndStatements RelationalExpr EqualExpr Select_Stm ArgExpr FunctionCallExpr UnaryExpr BlockItemStm
+%type <node> Program PrimaryExpr ParameterList ParameterDeclaration FunctionsAndDeclarations FunctionDeclaration FunctionDefinition FunctionBody FunctionDeclarator Statement AndExpr InclusiveOrExpr ExclusiveOrExpr Declaration Declarator Declarator_ AssignExpr LogicalOrExpr LogicalAndExpr AdditiveExpr MultiplicativeExpr Jump_Stm Iter_Stm Compound_Stm TypeSpec Expr_Stm Expr DeclarationsAndStatements RelationalExpr EqualExpr Select_Stm ArgExpr FunctionCallExpr UnaryExpr BlockItemStm ParameterDeclaration_ 
 
+%nonassoc IFS
 %nonassoc ELSE
 %%
+
 Program
         : FunctionsAndDeclarations                      { root = create_node("Program", NULL, 1, $1); }
         ;
@@ -33,18 +35,9 @@ PrimaryExpr
         | CHRLIT                                        { $$ = create_node("ChrLit",$1,0); free($1); } 
         | REALLIT                                       { $$ = create_node("RealLit",$1,0); free($1); } 
         | LPAR Expr RPAR                                { $$ = $2; }
-        | LPAR error RPAR                               { $$ = NULL; tree_flag = 0;}
+        | LPAR error RPAR                               { $$ = NULL; tree_flag = 0; }
         ; 
 
-ParameterList
-        : ParameterDeclaration                          { $$ = create_node("ParamList",NULL,1,$1); }
-        | ParameterList COMMA ParameterDeclaration      { $$ = create_node("ParamList",NULL,1,$3); aux = create_node("Comma",NULL,1,$3); add_brother($1,aux); add_brother($3,aux); add_brother($1,$3);}
-        ;
-        
-ParameterDeclaration
-        : TypeSpec                                      { $$ = create_node("ParamDeclaration",NULL,1,$1); }
-        | TypeSpec ID                                   { $$ = create_node("ParamDeclaration",NULL,1,$1); aux = add_brother(create_node("Id",$2,0),$1); } 
-        ;
 
 FunctionsAndDeclarations
         : FunctionDefinition                            { $$ = $1; }
@@ -53,6 +46,7 @@ FunctionsAndDeclarations
         | FunctionDefinition FunctionsAndDeclarations   { $$ = add_brother($1,$2); } 
         | FunctionDeclaration FunctionsAndDeclarations  { $$ = add_brother($1,$2); } 
         | Declaration FunctionsAndDeclarations          { $$ = add_brother($1,$2); } 
+        | error SEMI                                    { $$ = NULL; tree_flag = 0; }
         ; 
 
 FunctionDefinition
@@ -65,33 +59,36 @@ FunctionBody
         ;
 
 DeclarationsAndStatements
-        : Statement DeclarationsAndStatements           { $$ = add_brother($1,$2);} 
-        | Declaration DeclarationsAndStatements         { $$ = add_brother($1,$2);} 
+        : Statement DeclarationsAndStatements           { $$ = add_brother($1,$2); } 
+        | Declaration DeclarationsAndStatements         { $$ = add_brother($1,$2); } 
         | Statement                                     { $$ = $1; } 
         | Declaration                                   { $$ = $1; } 
         ;
 
 FunctionDeclaration
-        : TypeSpec FunctionDeclarator SEMI              { $$ = create_node("FuncDeclaration",NULL,2,$1,$2); add_brother($1,$2); }
+        : TypeSpec FunctionDeclarator SEMI              { $$ = create_node("FuncDeclaration",NULL,2,$1,$2); }
         ;
 
 FunctionDeclarator
-        : ID LPAR ParameterList RPAR                    { $$ = add_brother(create_node("Id",$1,0),$3); }
+        : ID LPAR ParameterList RPAR                    { $$ = add_brother(create_node("Id",$1,0),$3); free($1); }
         ; 
 
+ParameterList
+        : ParameterDeclaration ParameterDeclaration_    { $$ = create_node("ParamList",NULL,2,$1,$2); }
+        ;
+
+ParameterDeclaration_
+        : ParameterDeclaration_ COMMA ParameterDeclaration { aux = create_node("Comma",NULL,0); $$ = add_brother($1,$3); }
+        | empty                                         { $$ = NULL; }
+        ;
+        
+ParameterDeclaration
+        : TypeSpec                                      { $$ = create_node("ParamDeclaration",NULL,1,$1); }
+        | TypeSpec ID                                   { aux = create_node("Id",$2,0); $$ = create_node("ParamDeclaration",NULL,2,$1,aux); free($2); } 
+        ;
+
 Declaration
-        : TypeSpec Declarator SEMI                      { 
-            $$ = $2; 
-            aux = $2; 
-            while(aux != NULL) { 
-                aux->son = add_brother(create_node($1->label,NULL,0),aux->son); 
-                aux = aux->brother; 
-            } 
-            free($1->label); 
-            free($1->cval); 
-            free($1); 
-        }
-        | TypeSpec Declarator DeclarationList SEMI      { 
+        : TypeSpec Declarator Declarator_ SEMI      { 
             $2 = add_brother($2,$3); 
             aux = $2; 
             while(aux != NULL) { 
@@ -103,17 +100,16 @@ Declaration
             free($1->cval); 
             free($1); 
         }
-        | TypeSpec error SEMI                           { $$ = NULL; tree_flag = 0; }
         ;
 
-DeclarationList
-        : COMMA Declarator                              { $$ = $2; aux = create_node("Comma",NULL,0); add_brother($2,aux); }
-        | DeclarationList COMMA Declarator              { $$ = add_brother($1,$3); aux = create_node("Comma",NULL,0); add_brother($1,aux); add_brother($3,aux); }
+Declarator_
+        : Declarator_ COMMA Declarator                  { $$ = add_brother($1,$3); /* aux = create_node("Comma",NULL,0); add_brother($1,aux); add_brother($3,aux); */ }
+        | empty                                         { $$ = NULL; }
         ;
 
 Declarator
-        : ID ASSIGN AssignExpr                          { aux = create_node("Id",$1,0); if($3 != NULL) $$ = create_node("Declaration",NULL,2,aux,$3); }
-        | ID                                            { $$ = create_node("Id",$1,0); } 
+        : ID ASSIGN AssignExpr                          { aux = create_node("Id",$1,0); if($3 != NULL) $$ = create_node("Declaration",NULL,2,aux,$3); free($1); }
+        | ID                                            { aux = create_node("Id",$1,0); $$ = create_node("Declaration",NULL,1,aux); free($1); } 
         ;
 
 TypeSpec
@@ -147,11 +143,11 @@ BlockItemStm
 Expr_Stm
         : SEMI                                          { $$ = NULL; } 
         | Expr SEMI                                     { if (strcmp($1->label,"Null") == 0) { $$ = NULL; free($1); } else $$ = $1; } 
-        | error SEMI                                    { $$ = NULL; tree_flag = 0;  } 
+        | error SEMI                                    { $$ = NULL; tree_flag = 0; }
         ;
 
 Select_Stm
-        : IF LPAR Expr RPAR Statement %prec ELSE        { 
+        : IF LPAR Expr RPAR Statement %prec IFS         { 
             if($3 == NULL) 
                 $3 = create_node("Null",NULL,0); 
             if($5 == NULL) 
@@ -160,6 +156,8 @@ Select_Stm
             $$ = create_node("If",NULL,3,$3,$5,aux);
         } 
         | IF LPAR Expr RPAR Statement ELSE Statement    { 
+            if ($3 == NULL)
+                $3 = create_node("Null",NULL,0); 
             if($5 == NULL) 
                 $5 = create_node("Null",NULL,0); 
             if($7 == NULL) 
@@ -179,13 +177,14 @@ Jump_Stm
 
 ArgExpr
         : AssignExpr                                    { $$ = $1; }
-        | ArgExpr COMMA AssignExpr                      { $$ = add_brother($1,$3), aux = create_node("Comma",NULL,0); add_brother($1,aux); add_brother($3,aux); }
+        | ArgExpr COMMA AssignExpr                      { $$ = add_brother($1,$3); /* aux = create_node("Comma",NULL,0); add_brother($1,aux); add_brother($3,aux); */ }
         ;
 
 FunctionCallExpr
         : PrimaryExpr                                   { $$ = $1; }
-        | ID LPAR ArgExpr RPAR                          { aux = create_node("Id",$1,0); $$ = create_node("Call",NULL,2,aux,$3); } 
-        | ID LPAR error RPAR                            { $$ = NULL; tree_flag = 0; }
+        | ID LPAR ArgExpr RPAR                          { aux = create_node("Id",$1,0); $$ = create_node("Call",NULL,2,aux,$3); free($1); } 
+        | ID LPAR RPAR                                  { $$ = create_node("Id",$1,0); free($1); }
+        | ID LPAR error RPAR                            { $$ = NULL; tree_flag = 0; free($1); }
         ;
         
 
@@ -256,6 +255,8 @@ Expr
         : AssignExpr                                    { $$ = $1; } 
         | Expr COMMA AssignExpr                         { $$ = aux = create_node("Comma",NULL,2,$1,$3); add_brother($1,aux); add_brother($3,aux); } 
         ;
+
+empty: {};
 
 %%
 

@@ -91,7 +91,7 @@ RESERVED            "auto"|"break"|"case"|"const"|"continue"|"default"|"do"|"enu
 <CHARSTATE>{CHARLIT}                            { yymore(); error++; }
 <CHARSTATE>\\(.?)                               { yymore(); error=1;}
 <CHARSTATE>{LINETERMINATOR}                     { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); line++; column=1; }
-<CHARSTATE>{SINGLESPLIT}                        { BEGIN 0; if(error == 0) { print_content("CHRLIT",yytext); } else { printf("Line %d, col %d: invalid char constant (%s)\n",curr_line,curr_column,yytext);} column+=yyleng; if (flag == 2) { yylval.cval = (char*)strdup(yytext);  return CHRLIT; } }
+<CHARSTATE>{SINGLESPLIT}                        { BEGIN 0; if(error == 0) { print_content("CHRLIT",yytext); } else { printf("Line %d, col %d: invalid char constant (%s)\n",curr_line,curr_column,yytext);} column+=yyleng; if (flag == 2) { yylval.cval = (char*) strdup(yytext);  return CHRLIT; } }
 <CHARSTATE><<EOF>>                              { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); line++; column=1; }
 
 .                                               { printf("Line %d, col %d: illegal character (%s)\n",line,column,yytext); column+=yyleng; }
