@@ -8,7 +8,6 @@ typedef struct no {
     char * cval;
     char * label;
     int depth;
-    node father;
     node son;
     node brother;
 } no;

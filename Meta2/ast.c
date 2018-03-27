@@ -7,9 +7,13 @@ node create_node (char* label, char* cval, int n_sons, ...) {
     // Create new node
     node new_node = NULL;
     new_node = (node) malloc (sizeof(struct no));
-    new_node->label = strdup(label);
+
+    if (label == NULL) new_node->label = label;
+    else new_node->label = strdup(label);
+
     new_node->son = NULL;
     new_node->brother = NULL;
+
     if (cval == NULL) new_node->cval = cval;
     else new_node->cval = strdup(cval);
 
@@ -54,7 +58,7 @@ void print_tree(node n, int depth) {
     for (int i = 0; i < depth; i++) 
         printf("..");
             
-    if(n->cval != NULL)
+    if(n->cval != NULL && n->label != NULL)
         printf("%s(%s)",n->label,n->cval);
     else 
         printf("%s",n->label);

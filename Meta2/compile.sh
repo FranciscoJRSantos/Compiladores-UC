@@ -8,5 +8,5 @@ lex uccompiler.l
 yacc -d -v --locations uccompiler.y 
 clang-3.8 -o uccompiler -Wall -Wno-unused-function *.c
 zip uccompiler.zip uccompiler.l uccompiler.y ast.h y.tab.h ast.c
-valgrind --leak-check=full --show-leak-kinds=all ./uccompiler < first.uc -t
+valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./uccompiler < first.uc -t
 rm -rf uccompiler.dSYM
