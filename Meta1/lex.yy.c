@@ -8,7 +8,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 35
+#define YY_FLEX_SUBMINOR_VERSION 39
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -46,7 +46,6 @@ typedef int16_t flex_int16_t;
 typedef uint16_t flex_uint16_t;
 typedef int32_t flex_int32_t;
 typedef uint32_t flex_uint32_t;
-typedef uint64_t flex_uint64_t;
 #else
 typedef signed char flex_int8_t;
 typedef short int flex_int16_t;
@@ -54,7 +53,6 @@ typedef int flex_int32_t;
 typedef unsigned char flex_uint8_t; 
 typedef unsigned short int flex_uint16_t;
 typedef unsigned int flex_uint32_t;
-#endif /* ! C99 */
 
 /* Limits of integral types. */
 #ifndef INT8_MIN
@@ -84,6 +82,8 @@ typedef unsigned int flex_uint32_t;
 #ifndef UINT32_MAX
 #define UINT32_MAX             (4294967295U)
 #endif
+
+#endif /* ! C99 */
 
 #endif /* ! FLEXINT_H */
 
@@ -141,7 +141,15 @@ typedef unsigned int flex_uint32_t;
 
 /* Size of default input buffer. */
 #ifndef YY_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k.
+ * Moreover, YY_BUF_SIZE is 2*YY_READ_BUF_SIZE in the general case.
+ * Ditto for the __ia64__ case accordingly.
+ */
+#define YY_BUF_SIZE 32768
+#else
 #define YY_BUF_SIZE 16384
+#endif /* __ia64__ */
 #endif
 
 /* The state buf must be large enough to hold one state per character in the main buffer.
@@ -167,6 +175,7 @@ extern FILE *yyin, *yyout;
 #define EOB_ACT_LAST_MATCH 2
 
     #define YY_LESS_LINENO(n)
+    #define YY_LINENO_REWIND_TO(ptr)
     
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
@@ -356,7 +365,7 @@ static void yy_fatal_error (yyconst char msg[]  );
 #define YY_DO_BEFORE_ACTION \
 	(yytext_ptr) = yy_bp; \
 	(yytext_ptr) -= (yy_more_len); \
-	yyleng = (yy_size_t) (yy_cp - (yytext_ptr)); \
+	yyleng = (size_t) (yy_cp - (yytext_ptr)); \
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
@@ -688,8 +697,8 @@ static int yy_more_len = 0;
 #define YY_MORE_ADJ (yy_more_len)
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
-#line 21 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 1 "uccompiler.l"
+#line 21 "uccompiler.l"
 #include <stdio.h>
 
 int column = 1;
@@ -702,7 +711,7 @@ int error = -1;
 void print_text(char * text);
 void print_content(char * text, char * content);
 
-#line 706 "lex.yy.c"
+#line 715 "lex.yy.c"
 
 #define INITIAL 0
 #define CHAR 1
@@ -785,7 +794,12 @@ static int input (void );
 
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k */
+#define YY_READ_BUF_SIZE 16384
+#else
 #define YY_READ_BUF_SIZE 8192
+#endif /* __ia64__ */
 #endif
 
 /* Copy whatever the last rule matched to the standard output. */
@@ -793,7 +807,7 @@ static int input (void );
 /* This used to be an fputs(), but since the string might contain NUL's,
  * we now use fwrite().
  */
-#define ECHO fwrite( yytext, yyleng, 1, yyout )
+#define ECHO do { if (fwrite( yytext, yyleng, 1, yyout )) {} } while (0)
 #endif
 
 /* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
@@ -804,7 +818,7 @@ static int input (void );
 	if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
 		{ \
 		int c = '*'; \
-		yy_size_t n; \
+		int n; \
 		for ( n = 0; n < max_size && \
 			     (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
 			buf[n] = (char) c; \
@@ -817,7 +831,7 @@ static int input (void );
 	else \
 		{ \
 		errno=0; \
-		while ( (result = fread(buf, 1, max_size, yyin))==0 && ferror(yyin)) \
+		while ( (result = fread(buf, 1, (yy_size_t) max_size, yyin)) == 0 && ferror(yyin)) \
 			{ \
 			if( errno != EINTR) \
 				{ \
@@ -886,10 +900,6 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 36 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
-
-#line 892 "lex.yy.c"
-
 	if ( !(yy_init) )
 		{
 		(yy_init) = 1;
@@ -916,6 +926,11 @@ YY_DECL
 		yy_load_buffer_state( );
 		}
 
+	{
+#line 36 "uccompiler.l"
+
+#line 933 "lex.yy.c"
+
 	while ( 1 )		/* loops until end-of-file is reached */
 		{
 		(yy_more_len) = 0;
@@ -938,7 +953,7 @@ YY_DECL
 yy_match:
 		do
 			{
-			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
+			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)] ;
 			if ( yy_accept[yy_current_state] )
 				{
 				(yy_last_accepting_state) = yy_current_state;
@@ -979,276 +994,276 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 37 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 37 "uccompiler.l"
 { BEGIN MLINECOMMENT; curr_line = line; curr_column = column; column+=yyleng; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 38 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 38 "uccompiler.l"
 { BEGIN 0; column+=yyleng; }
 	YY_BREAK
 case YY_STATE_EOF(MLINECOMMENT):
-#line 39 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 39 "uccompiler.l"
 { BEGIN 0; printf("Line %d, col %d: unterminated comment\n",curr_line,curr_column); column+=yyleng; }
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 40 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 40 "uccompiler.l"
 { line++; column=1; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 41 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 41 "uccompiler.l"
 { column+=yyleng; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 43 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 43 "uccompiler.l"
 { column+=yyleng; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 45 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 45 "uccompiler.l"
 { column+=yyleng; print_text("CHAR"); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 46 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 46 "uccompiler.l"
 { column+=yyleng; print_text("ELSE"); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 47 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 47 "uccompiler.l"
 { column+=yyleng; print_text("WHILE"); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 48 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 48 "uccompiler.l"
 { column+=yyleng; print_text("IF"); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 49 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 49 "uccompiler.l"
 { column+=yyleng; print_text("INT"); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 50 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 50 "uccompiler.l"
 { column+=yyleng; print_text("SHORT"); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 51 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 51 "uccompiler.l"
 { column+=yyleng; print_text("DOUBLE"); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 52 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 52 "uccompiler.l"
 { column+=yyleng; print_text("RETURN"); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 53 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 53 "uccompiler.l"
 { column+=yyleng; print_text("VOID"); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 54 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 54 "uccompiler.l"
 { column+=yyleng; print_text("BITWISEAND"); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 55 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 55 "uccompiler.l"
 { column+=yyleng; print_text("BITWISEOR");  }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 56 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 56 "uccompiler.l"
 { column+=yyleng; print_text("BITWISEXOR");  }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 57 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 57 "uccompiler.l"
 { column+=yyleng; print_text("AND"); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 58 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 58 "uccompiler.l"
 { column+=yyleng; print_text("ASSIGN"); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 59 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 59 "uccompiler.l"
 { column+=yyleng; print_text("MUL"); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 60 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 60 "uccompiler.l"
 { column+=yyleng; print_text("COMMA"); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 61 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 61 "uccompiler.l"
 { column+=yyleng; print_text("DIV"); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 62 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 62 "uccompiler.l"
 { column+=yyleng; print_text("EQ"); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 63 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 63 "uccompiler.l"
 { column+=yyleng; print_text("GE"); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 64 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 64 "uccompiler.l"
 { column+=yyleng; print_text("GT");  }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 65 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 65 "uccompiler.l"
 { column+=yyleng; print_text("LBRACE"); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 66 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 66 "uccompiler.l"
 { column+=yyleng; print_text("LE"); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 67 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 67 "uccompiler.l"
 { column+=yyleng; print_text("LPAR"); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 68 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 68 "uccompiler.l"
 { column+=yyleng; print_text("LT"); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 69 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 69 "uccompiler.l"
 { column+=yyleng; print_text("MINUS"); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 70 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 70 "uccompiler.l"
 { column+=yyleng; print_text("MOD");  }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 71 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 71 "uccompiler.l"
 { column+=yyleng; print_text("NE"); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 72 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 72 "uccompiler.l"
 { column+=yyleng; print_text("NOT"); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 73 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 73 "uccompiler.l"
 { column+=yyleng; print_text("OR"); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 74 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 74 "uccompiler.l"
 { column+=yyleng; print_text("PLUS");  }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 75 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 75 "uccompiler.l"
 { column+=yyleng; print_text("RBRACE"); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 76 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 76 "uccompiler.l"
 { column+=yyleng; print_text("RPAR");  }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 77 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 77 "uccompiler.l"
 { column+=yyleng; print_text("SEMI"); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 78 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 78 "uccompiler.l"
 { column+=yyleng; print_content("RESERVED", yytext); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 80 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 80 "uccompiler.l"
 { column+=yyleng; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 81 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 81 "uccompiler.l"
 { column+=yyleng; }
 	YY_BREAK
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-#line 82 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 82 "uccompiler.l"
 { column=1; line++; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 84 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 84 "uccompiler.l"
 { column+=yyleng; print_content("ID",yytext); }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 85 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 85 "uccompiler.l"
 { column+=yyleng; print_content("INTLIT",yytext); }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 87 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 87 "uccompiler.l"
 { yymore(); BEGIN CHAR; curr_column = column; curr_line = line; error = -1; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 88 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 88 "uccompiler.l"
 { yymore(); error++; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 89 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
-{ yymore(); error=1;}
+#line 89 "uccompiler.l"
+{ yymore(); error=1; }
 	YY_BREAK
 case 48:
 /* rule 48 can match eol */
 YY_RULE_SETUP
-#line 90 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 90 "uccompiler.l"
 { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); line++; column=1; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 91 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 91 "uccompiler.l"
 { BEGIN 0; if(error == 0) { print_content("CHRLIT",yytext); } else { printf("Line %d, col %d: invalid char constant (%s)\n",curr_line,curr_column,yytext);} column+=yyleng; }
 	YY_BREAK
 case YY_STATE_EOF(CHAR):
-#line 92 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 92 "uccompiler.l"
 { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); line++; column=1; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 94 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 94 "uccompiler.l"
 { column+=yyleng; print_content("REALLIT",yytext); }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 95 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 95 "uccompiler.l"
 { printf("Line %d, col %d: illegal character (%s)\n",line,column,yytext); column+=yyleng; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 97 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 97 "uccompiler.l"
 ECHO;
 	YY_BREAK
-#line 1252 "lex.yy.c"
+#line 1267 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1379,6 +1394,7 @@ case YY_STATE_EOF(INITIAL):
 			"fatal flex scanner internal error--no action found" );
 	} /* end of action switch */
 		} /* end of scanning one token */
+	} /* end of user's declarations */
 } /* end of yylex */
 
 /* yy_get_next_buffer - try to read in a new buffer
@@ -1434,14 +1450,14 @@ static int yy_get_next_buffer (void)
 
 	else
 		{
-			yy_size_t num_to_read =
+			int num_to_read =
 			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
 		while ( num_to_read <= 0 )
 			{ /* Not enough room in the buffer - grow it. */
 
 			/* just a shorter name for the current buffer */
-			YY_BUFFER_STATE b = YY_CURRENT_BUFFER;
+			YY_BUFFER_STATE b = YY_CURRENT_BUFFER_LVALUE;
 
 			int yy_c_buf_p_offset =
 				(int) ((yy_c_buf_p) - b->yy_ch_buf);
@@ -1574,7 +1590,7 @@ static int yy_get_next_buffer (void)
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 	yy_is_jam = (yy_current_state == 223);
 
-	return yy_is_jam ? 0 : yy_current_state;
+		return yy_is_jam ? 0 : yy_current_state;
 }
 
     static void yyunput (int c, register char * yy_bp )
@@ -1662,7 +1678,7 @@ static int yy_get_next_buffer (void)
 				case EOB_ACT_END_OF_FILE:
 					{
 					if ( yywrap( ) )
-						return 0;
+						return EOF;
 
 					if ( ! (yy_did_buffer_switch_on_eof) )
 						YY_NEW_FILE;
@@ -1798,10 +1814,6 @@ static void yy_load_buffer_state  (void)
 	yyfree((void *) b  );
 }
 
-#ifndef __cplusplus
-extern int isatty (int );
-#endif /* __cplusplus */
-    
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,
  * such as during a yyrestart() or at EOF.
@@ -2006,8 +2018,8 @@ YY_BUFFER_STATE yy_scan_string (yyconst char * yystr )
 
 /** Setup the input buffer state to scan the given bytes. The next call to yylex() will
  * scan from a @e copy of @a bytes.
- * @param bytes the byte buffer to scan
- * @param len the number of bytes in the buffer pointed to by @a bytes.
+ * @param yybytes the byte buffer to scan
+ * @param _yybytes_len the number of bytes in the buffer pointed to by @a bytes.
  * 
  * @return the newly allocated buffer state object.
  */
@@ -2015,7 +2027,8 @@ YY_BUFFER_STATE yy_scan_bytes  (yyconst char * yybytes, yy_size_t  _yybytes_len 
 {
 	YY_BUFFER_STATE b;
 	char *buf;
-	yy_size_t n, i;
+	yy_size_t n;
+	yy_size_t i;
     
 	/* Get memory for full buffer, including space for trailing EOB's. */
 	n = _yybytes_len + 2;
@@ -2245,7 +2258,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 97 "/Users/franciscosantos/Desktop/2ºSemestre/Compiladores/UC/Meta1/uccompiler.l"
+#line 96 "uccompiler.l"
 
 
 

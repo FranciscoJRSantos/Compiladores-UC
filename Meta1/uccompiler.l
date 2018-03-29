@@ -86,7 +86,7 @@ void print_content(char * text, char * content);
 
 {SINGLESPLIT}                                   { yymore(); BEGIN CHAR; curr_column = column; curr_line = line; error = -1; }
 <CHAR>{CHARLIT}                                 { yymore(); error++; }
-<CHAR>\\(.?)                                    { yymore(); error=1;}
+<CHAR>\\(.?)                                    { yymore(); error=1; }
 <CHAR>{LINETERMINATOR}                          { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); line++; column=1; }
 <CHAR>{SINGLESPLIT}                             { BEGIN 0; if(error == 0) { print_content("CHRLIT",yytext); } else { printf("Line %d, col %d: invalid char constant (%s)\n",curr_line,curr_column,yytext);} column+=yyleng; }
 <CHAR><<EOF>>                                   { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); line++; column=1; }

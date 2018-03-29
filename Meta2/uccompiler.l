@@ -1,6 +1,9 @@
 %{
 #include <stdio.h>
+#include <stdlib.h> 
+#include <string.h>
 #include "y.tab.h"
+#include "ast.h"
 
 int column = 1;
 int line = 1;
@@ -8,10 +11,12 @@ int curr_column = 1;
 int curr_line = 1;
 int flag;
 int error = -1;
+int tree_flag;
 
 void print_text(char * text);
 void print_content(char * text, char * content);
 void yyerror(const char * s);
+node root;
 %}
 
 %X CHARSTATE MLINECOMMENT
@@ -38,7 +43,7 @@ RESERVED            "auto"|"break"|"case"|"const"|"continue"|"default"|"do"|"enu
 %%
 "/*"                                            { BEGIN MLINECOMMENT; curr_line = line; curr_column = column; column+=yyleng; }
 <MLINECOMMENT>"*/"                              { BEGIN 0; column+=yyleng; }
-<MLINECOMMENT><<EOF>>                           { BEGIN 0; printf("Line %d, col %d: unterminated comment\n",curr_line,curr_column); column+=yyleng; }
+<MLINECOMMENT><<EOF>>                           { BEGIN 0; printf("Line %d, col %d: unterminated comment\n",curr_line,curr_column); column+=yyleng; return 0; }
 <MLINECOMMENT>{LINETERMINATOR}                  { line++; column=1; }
 <MLINECOMMENT>.                                 { column+=yyleng; }
 
@@ -92,8 +97,9 @@ RESERVED            "auto"|"break"|"case"|"const"|"continue"|"default"|"do"|"enu
 <CHARSTATE>\\(.?)                               { yymore(); error=1;}
 <CHARSTATE>{LINETERMINATOR}                     { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); line++; column=1; }
 <CHARSTATE>{SINGLESPLIT}                        { BEGIN 0; if(error == 0) { print_content("CHRLIT",yytext); } else { printf("Line %d, col %d: invalid char constant (%s)\n",curr_line,curr_column,yytext);} column+=yyleng; if (flag == 2) { yylval.cval = (char*) strdup(yytext);  return CHRLIT; } }
-<CHARSTATE><<EOF>>                              { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); line++; column=1; }
+<CHARSTATE><<EOF>>                              { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); column+=yyleng; return 0; }
 
+<<EOF>>                                         { column+=yyleng; return 0; }
 .                                               { printf("Line %d, col %d: illegal character (%s)\n",line,column,yytext); column+=yyleng; }
 
 %%
@@ -125,4 +131,31 @@ int yywrap(void)
 
 void yyerror(const char * s){
   printf("Line %d, col %d: %s: %s\n",line,(int)(column-yyleng), s, yytext);
+}
+
+int main(int argc, char * argv[])
+{
+    if (argc > 1)
+    {
+        if(strcmp(argv[1],"-l") == 0)
+        {
+            flag = 1;
+            yylex();
+        }
+        if(strcmp(argv[1],"-t") == 0)
+        {
+            flag = 2;
+            tree_flag = 1; 
+            yyparse();
+            if (tree_flag == 1 && root != NULL) {
+              print_tree(root,0);
+            }
+        }
+    }
+    else {
+        flag = 2;
+        yyparse();
+    }
+    yylex_destroy();
+    return 0;
 }
