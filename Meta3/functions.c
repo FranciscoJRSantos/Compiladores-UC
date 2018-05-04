@@ -101,6 +101,33 @@ int implicit_type_convertion(symbol_type expected, symbol_type given) {
   
 }
 
+int call_type_convertion(symbol_type expected, symbol_type given) {
+
+  char types [5][100] = { "double", "int", "short", "char" };
+  int t1 = 0, t2 = 0;
+
+  for (int i = 0; i < 5; i++) {
+    if (strcmp(expected->type, types[i]) == 0) {
+      t1 = i;
+    }
+    if (strcmp(given->type, types[i]) == 0) {
+      t2 = i;
+    }
+  }
+
+  if (t1 == 3 && (t2 == 1 || t2 == 2)){
+    return 1;
+  }
+  else if (t1 == 2 && t2 == 1) {
+    return 1;
+  }
+  else if (t1 > t2) {
+    return 0;
+  }
+  return 1;
+  
+}
+
 
 int report_param_errors(node aux_node) {
 

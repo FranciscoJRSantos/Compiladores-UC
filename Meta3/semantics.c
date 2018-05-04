@@ -258,15 +258,17 @@ int parse_call (node aux_node) {
         if (expt != NULL) 
           params_expected++;
 
-        if (error == 0 && params != NULL && expt != NULL) {
+        if (params != NULL && expt != NULL) {
+          /* printf("%s | %s\n", params->type->type, expt->type); */
           if (strcmp(params->type->type, "undef") == 0 || strcmp(expt->type,"undef") == 0) {
             print_conflicting_types(params->type, new_type(expt->type, NULL), params->line, params->column);
             error = 1;
           }
-          if (strcmp(expt->type,"void") == 0) { 
+          else if (((strcmp(params->type->type, "void") == 0)) && (strcmp(expt->type,"void") != 0)) {
+            print_conflicting_types(params->type, new_type(expt->type, NULL), params->line, params->column);
             error = 1;
           }
-          else if (strcmp(params->type->type, "double") == 0 && strcmp(expt->type,"double") != 0) {
+          else if (!call_type_convertion(expt, params->type)) {
             print_conflicting_types(params->type, new_type(expt->type, NULL), params->line, params->column);
             error = 1;
           }
@@ -365,17 +367,17 @@ int parse_unary_expression(node aux_node) {
   }
   else if (strcmp(aux_node->label,"Not") == 0){
     if (strcmp(type1->type,"undef") == 0) {
-      aux_node->type = new_type("undef", NULL);
+      aux_node->type = new_type("int", NULL);
       error_operator_type(aux_node,type1);
       return 0;
     }
     if ((strcmp(type1->type,"double") == 0)) {
-      aux_node->type = new_type("undef", NULL);
+      aux_node->type = new_type("int", NULL);
       error_operator_type(aux_node,type1);
       return 0;
     }
     else if ((strcmp(type1->type,"void") == 0)) {
-      aux_node->type = new_type("undef", NULL);
+      aux_node->type = new_type("int", NULL);
       error_operator_type(aux_node,type1);
       return 0;
     }
@@ -405,7 +407,7 @@ int parse_bitwise_error (node aux_node) {
     return 0;
   }
   else if (strcmp(type1->type,"undef") == 0 || strcmp(type2->type,"undef") == 0) {
-    aux_node->type = new_type("undef", NULL);
+    aux_node->type = new_type("int", NULL);
     print_operand_error(aux_node, type1, type2);
     return 0;
   }
@@ -433,7 +435,7 @@ void parse_and_or_errors(node aux_node) {
     print_operand_error(aux_node, type1, type2);
   }
   else if (strcmp(type1->type,"undef") == 0 || strcmp(type2->type,"undef") == 0) {
-    aux_node->type = new_type("undef", NULL);
+    aux_node->type = new_type("int", NULL);
     print_operand_error(aux_node, type1, type2);
   }
   else if ((strcmp(type1->type,"double") == 0) || (strcmp(type2->type,"double") == 0)) {
@@ -450,8 +452,9 @@ int parse_comma_errors(node aux_node) {
 
   symbol_type type1 = aux_node->son->type;
   symbol_type type2 = aux_node->son->brother->type;
+  int is_function1 = type1->parameters != NULL;
   int is_function2 = type2->parameters != NULL;
-  if (is_function2){
+  if (is_function1 || is_function2){
     aux_node->type = new_type("undef", NULL);
     print_operand_error(aux_node, type1, type2);
     return 0;

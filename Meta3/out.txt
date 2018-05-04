@@ -44,7 +44,7 @@ Line 92, col 2: Operator && cannot be applied to types int(void), int(void)
 Line 93, col 9: Wrong number of arguments to function f (got 1, required 0)
 Line 95, col 3: Operator && cannot be applied to types int, int(void)
 Line 97, col 3: Operator || cannot be applied to types int, int(void)
-Line 101, col 5: Symbol teste already defined
+Line 102, col 10: Conflicting types (got double, expected int)
 Line 106, col 7: Conflicting types (got double, expected int)
 Line 110, col 9: Conflicting types (got double, expected int)
 Line 117, col 8: Invalid use of void type in declaration
@@ -103,12 +103,27 @@ Line 225, col 17: Operator ^ cannot be applied to types double, double
 Line 233, col 9: Operator = cannot be applied to types void(void), int
 Line 237, col 9: Operator = cannot be applied to types int(void), int
 Line 241, col 9: Operator = cannot be applied to types double(void), int
-Line 249, col 6: Conflicting types (got void(void), expected double)
 Line 254, col 10: Conflicting types (got char, expected void)
+Line 259, col 10: Conflicting types (got double, expected void)
 Line 263, col 12: Wrong number of arguments to function main (got 1, required 0)
 Line 263, col 10: Conflicting types (got int, expected void)
 Line 271, col 6: Operator = cannot be applied to types short(void), char
 Line 272, col 10: Wrong number of arguments to function in (got 1, required 0)
+Line 288, col 6: Conflicting types (got void, expected char)
+Line 288, col 11: Conflicting types (got void, expected int)
+Line 288, col 16: Conflicting types (got void, expected double)
+Line 289, col 6: Conflicting types (got void, expected char)
+Line 289, col 12: Conflicting types (got double, expected short)
+Line 289, col 18: Conflicting types (got void, expected double)
+Line 290, col 14: Conflicting types (got double, expected int)
+Line 290, col 3: Wrong number of arguments to function g1 (got 3, required 4)
+Line 291, col 8: Operator | cannot be applied to types void, void
+Line 292, col 3: Unknown symbol rip
+Line 292, col 9: Unknown symbol sadhlaskd
+Line 292, col 21: Unknown symbol askdjlk
+Line 292, col 19: Operator + cannot be applied to types undef, undef
+Line 292, col 7: Operator = cannot be applied to types undef, undef
+Line 296, col 10: Conflicting types (got int(int), expected int)
 ===== Global Symbol Table =====
 putchar	int(int)
 getchar	int(void)
@@ -128,6 +143,7 @@ e	char
 g	char
 x	double(int,char,double)
 main	int(void)
+teste213	int(void)
 what	int(void)
 mod	int(void)
 f1	int(void)
@@ -149,10 +165,18 @@ main2	void(void)
 main3	int(void)
 main4	double(void)
 what2	short(void)
+b212312	void(void)
 main5	void(char)
+c12312	void(void)
 a2	void(void)
 in	char(void)
 sh	short(void)
+A1	void(void)
+g0	int(char,int,double)
+g1	int(char,short,int,double)
+g2	void(void)
+main21321	int(void)
+recursive	int(int)
 
 ===== Function M Symbol Table =====
 return	void
@@ -191,6 +215,9 @@ return	double
 return	int
 a	char
 x	int
+
+===== Function teste213 Symbol Table =====
+return	int
 
 ===== Function what Symbol Table =====
 return	int
@@ -273,9 +300,15 @@ return	double
 return	short
 a	int
 
+===== Function b212312 Symbol Table =====
+return	void
+
 ===== Function main5 Symbol Table =====
 return	void
 c	char	param
+
+===== Function c12312 Symbol Table =====
+return	void
 
 ===== Function a2 Symbol Table =====
 return	void
@@ -285,6 +318,17 @@ return	char
 
 ===== Function sh Symbol Table =====
 return	short
+
+===== Function A1 Symbol Table =====
+return	void
+
+===== Function main21321 Symbol Table =====
+return	int
+a	double
+b	int
+
+===== Function recursive Symbol Table =====
+return	int
 
 Program
 ..Declaration
@@ -662,13 +706,13 @@ Program
 ........ChrLit('a') - int
 ..FuncDefinition
 ....Int
-....Id(teste)
+....Id(teste213)
 ....ParamList
 ......ParamDeclaration
 ........Void
 ....FuncBody
 ......Return
-........RealLit(2.3)
+........RealLit(2.3) - double
 ..FuncDefinition
 ....Int
 ....Id(what)
@@ -1208,7 +1252,7 @@ Program
 ........Id(a) - int
 ..FuncDefinition
 ....Void
-....Id(b)
+....Id(b212312)
 ....ParamList
 ......ParamDeclaration
 ........Void
@@ -1225,6 +1269,15 @@ Program
 ....FuncBody
 ......Return
 ........Id(c) - char
+..FuncDefinition
+....Void
+....Id(c12312)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Return
+........RealLit(2.3) - double
 ..FuncDefinition
 ....Void
 ....Id(a2)
@@ -1263,3 +1316,94 @@ Program
 ..........Id(in) - char(void)
 ..........Call - int
 ............Id(a) - int
+..FuncDefinition
+....Void
+....Id(A1)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+..Declaration
+....Double
+....Id(b)
+..FuncDeclaration
+....Int
+....Id(g0)
+....ParamList
+......ParamDeclaration
+........Char
+......ParamDeclaration
+........Int
+......ParamDeclaration
+........Double
+..FuncDeclaration
+....Int
+....Id(g1)
+....ParamList
+......ParamDeclaration
+........Char
+......ParamDeclaration
+........Short
+......ParamDeclaration
+........Int
+......ParamDeclaration
+........Double
+..FuncDeclaration
+....Void
+....Id(g2)
+....ParamList
+......ParamDeclaration
+........Void
+..FuncDefinition
+....Int
+....Id(main21321)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Declaration
+........Double
+........Id(a)
+......Declaration
+........Int
+........Id(b)
+......Call - int
+........Id(g0) - int(char,int,double)
+........Call - void
+..........Id(A1) - void(void)
+........Call - void
+..........Id(A1) - void(void)
+........Call - void
+..........Id(A1) - void(void)
+......Call - int
+........Id(g1) - int(char,short,int,double)
+........Call - void
+..........Id(A1) - void(void)
+........Id(a) - double
+........Id(b) - int
+........Call - void
+..........Id(A1) - void(void)
+......Call - int
+........Id(g1) - int(char,short,int,double)
+........ChrLit('a') - int
+........ChrLit('a') - int
+........RealLit(2.3) - double
+......BitWiseOr - int
+........Call - void
+..........Id(A1) - void(void)
+........Call - void
+..........Id(A1) - void(void)
+......Store - undef
+........Id(rip) - undef
+........Add - undef
+..........Id(sadhlaskd) - undef
+..........Id(askdjlk) - undef
+..FuncDefinition
+....Int
+....Id(recursive)
+....ParamList
+......ParamDeclaration
+........Int
+....FuncBody
+......Return
+........Id(recursive) - int(int)

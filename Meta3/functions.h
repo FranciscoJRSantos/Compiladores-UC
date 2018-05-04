@@ -14,6 +14,7 @@ void print_lvalue_error(int line, int column);
 int param_has_error(node aux_node, node to_compare);
 void error_operator_type(node aux_node, symbol_type t);
 void print_unknown_symbol(char *symbol, int line, int column);
+int call_type_convertion(symbol_type expected, symbol_type given);
 int implicit_type_convertion(symbol_type expected, symbol_type given);
 void print_operand_error(node aux_node, symbol_type t1, symbol_type t2);
 void print_symbol_error (char * symbol, int line, int column, int flag);
