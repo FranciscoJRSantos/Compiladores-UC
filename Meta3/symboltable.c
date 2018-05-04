@@ -28,7 +28,7 @@ table create_table(char* name) {
 // Procura uma tabela com o nome passado por parametro
 table search_table(char* name) {
 
-    for(table aux_table = symbols_table; aux_table->next != NULL; aux_table = aux_table->next) {
+    for(table aux_table = symbols_table; aux_table != NULL; aux_table = aux_table->next) {  
       if (strcmp(aux_table->name,name) == 0) {
        return aux_table;
       }

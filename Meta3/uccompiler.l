@@ -1,9 +1,10 @@
+
 %{
+#include "y.tab.h"
+#include "semantics.h"
 #include <stdio.h>
 #include <stdlib.h> 
 #include <string.h>
-#include "y.tab.h"
-#include "semantics.h"
 
 int column = 1;
 int line = 1;
@@ -49,54 +50,57 @@ RESERVED            "auto"|"break"|"case"|"const"|"continue"|"default"|"do"|"enu
 
 "//".*                                          { column+=yyleng; }
 
-"char"                                          { column+=yyleng; print_text("CHAR"); if(flag == 2) return CHAR; }
 "else"                                          { column+=yyleng; print_text("ELSE"); if(flag == 2) return ELSE; }
-"while"                                         { column+=yyleng; print_text("WHILE"); if (flag == 2) return WHILE; }
-"if"                                            { column+=yyleng; print_text("IF"); if (flag == 2) return IF; }
-"int"                                           { column+=yyleng; print_text("INT"); if (flag == 2) return INT; }
-"short"                                         { column+=yyleng; print_text("SHORT"); if (flag == 2) return SHORT; }
-"double"                                        { column+=yyleng; print_text("DOUBLE"); if (flag == 2) return DOUBLE; }
-"return"                                        { column+=yyleng; print_text("RETURN"); if (flag == 2) return RETURN; }
-"void"                                          { column+=yyleng; print_text("VOID"); if (flag == 2) return VOID; }
-"&"                                             { column+=yyleng; print_text("BITWISEAND"); if (flag == 2) return BITWISEAND; }
-"|"                                             { column+=yyleng; print_text("BITWISEOR");  if (flag == 2) return BITWISEOR; }
-"^"                                             { column+=yyleng; print_text("BITWISEXOR"); if (flag == 2) return BITWISEXOR; }
-"&&"                                            { column+=yyleng; print_text("AND"); if (flag == 2) return AND;}
-"="                                             { column+=yyleng; print_text("ASSIGN"); if (flag == 2) return ASSIGN; }
-"*"                                             { column+=yyleng; print_text("MUL"); if (flag == 2) return MUL; }
-","                                             { column+=yyleng; print_text("COMMA"); if (flag == 2) return COMMA; }
-"/"                                             { column+=yyleng; print_text("DIV"); if (flag == 2) return DIV; }
-"=="                                            { column+=yyleng; print_text("EQ"); if (flag == 2) return EQ; }
-">="                                            { column+=yyleng; print_text("GE"); if (flag == 2) return GE; }
-">"                                             { column+=yyleng; print_text("GT"); if (flag == 2) return GT; }
+"while"                                         { column+=yyleng; print_text("WHILE"); if (flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng);  return WHILE; } }
+"if"                                            { column+=yyleng; print_text("IF"); if (flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng); return IF; } }
+
+"int"                                           { column+=yyleng; print_text("INT"); if (flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng);  return INT; } }
+"char"                                          { column+=yyleng; print_text("CHAR"); if(flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng);  return CHAR; } }
+"short"                                         { column+=yyleng; print_text("SHORT"); if (flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng); return SHORT; } }
+"double"                                        { column+=yyleng; print_text("DOUBLE"); if (flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng);  return DOUBLE; } }
+"void"                                          { column+=yyleng; print_text("VOID"); if (flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng); return VOID; } }
+"return"                                        { column+=yyleng; print_text("RETURN"); if (flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng); return RETURN; } }
+
+"&"                                             { column+=yyleng; print_text("BITWISEAND"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return BITWISEAND; }  }
+"|"                                             { column+=yyleng; print_text("BITWISEOR");  if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return BITWISEOR; } }
+"^"                                             { column+=yyleng; print_text("BITWISEXOR"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return BITWISEXOR; }  }
+"&&"                                            { column+=yyleng; print_text("AND"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return AND; } }
+"="                                             { column+=yyleng; print_text("ASSIGN"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return ASSIGN; } }
+"*"                                             { column+=yyleng; print_text("MUL"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return MUL; } }
+","                                             { column+=yyleng; print_text("COMMA"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return COMMA; } }
+"/"                                             { column+=yyleng; print_text("DIV"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng);  return DIV; } }
+"=="                                            { column+=yyleng; print_text("EQ"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return EQ; } }
+">="                                            { column+=yyleng; print_text("GE"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return GE; } }
+">"                                             { column+=yyleng; print_text("GT"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return GT; } }
+
 "{"                                             { column+=yyleng; print_text("LBRACE"); if (flag == 2) return LBRACE; }
-"<="                                            { column+=yyleng; print_text("LE"); if (flag == 2) return LE; }
-"("                                             { column+=yyleng; print_text("LPAR"); if (flag == 2) return LPAR; }
-"<"                                             { column+=yyleng; print_text("LT"); if (flag == 2) return LT; }
-"-"                                             { column+=yyleng; print_text("MINUS"); if (flag == 2) return MINUS; }
-"%"                                             { column+=yyleng; print_text("MOD"); if (flag == 2) return MOD; }
-"!="                                            { column+=yyleng; print_text("NE"); if (flag == 2) return NE; }
-"!"                                             { column+=yyleng; print_text("NOT"); if (flag == 2) return NOT; }
-"||"                                            { column+=yyleng; print_text("OR"); if (flag == 2) return OR; }
-"+"                                             { column+=yyleng; print_text("PLUS"); if (flag == 2) return PLUS; }
+"<="                                            { column+=yyleng; print_text("LE"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng);  return LE; } }
+"("                                             { column+=yyleng; print_text("LPAR"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return LPAR; } }
+"<"                                             { column+=yyleng; print_text("LT"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return LT; } }
+"-"                                             { column+=yyleng; print_text("MINUS"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng);  return MINUS; } }
+"%"                                             { column+=yyleng; print_text("MOD"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng);  return MOD; } }
+"!="                                            { column+=yyleng; print_text("NE"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng);  return NE; } }
+"!"                                             { column+=yyleng; print_text("NOT"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return NOT; } }
+"||"                                            { column+=yyleng; print_text("OR"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return OR; } }
+"+"                                             { column+=yyleng; print_text("PLUS"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng);  return PLUS; } }
 "}"                                             { column+=yyleng; print_text("RBRACE"); if (flag == 2) return RBRACE; }
-")"                                             { column+=yyleng; print_text("RPAR"); if (flag == 2) return RPAR; }
-";"                                             { column+=yyleng; print_text("SEMI"); if (flag == 2) return SEMI; }
-{RESERVED}                                      { column+=yyleng; print_content("RESERVED", yytext); if (flag == 2) return RESERVED; }
+")"                                             { column+=yyleng; print_text("RPAR"); if (flag == 2) {  return RPAR; } }
+";"                                             { column+=yyleng; print_text("SEMI"); if (flag == 2) {  return SEMI; } }
+{RESERVED}                                      { column+=yyleng; print_content("RESERVED", yytext); if (flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng); return RESERVED; } }
 
 {TAB}                                           { column+=yyleng; }
 {SPACE}                                         { column+=yyleng; }
 {LINETERMINATOR}                                { column=1; line++; }
 
-{ID}                                            { column+=yyleng; print_content("ID",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext); return ID; }}
-{INTLIT}                                        { column+=yyleng; print_content("INTLIT",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext);  return INTLIT; } }
-{REALLIT}                                       { column+=yyleng; print_content("REALLIT",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext);  return REALLIT; } }
+{ID}                                            { column+=yyleng; print_content("ID",yytext); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return ID; } }
+{INTLIT}                                        { column+=yyleng; print_content("INTLIT",yytext); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng);  return INTLIT; } }
+{REALLIT}                                       { column+=yyleng; print_content("REALLIT",yytext); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng);  return REALLIT; } }
 
 {SINGLESPLIT}                                   { yymore(); BEGIN CHARSTATE; curr_column = column; curr_line = line; error = -1; }
 <CHARSTATE>{CHARLIT}                            { yymore(); error++; }
 <CHARSTATE>\\(.?)                               { yymore(); error=1;}
 <CHARSTATE>{LINETERMINATOR}                     { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); line++; column=1; }
-<CHARSTATE>{SINGLESPLIT}                        { BEGIN 0; if(error == 0) { print_content("CHRLIT",yytext); } else { printf("Line %d, col %d: invalid char constant (%s)\n",curr_line,curr_column,yytext);} column+=yyleng; if (flag == 2) { yylval.cval = (char*) strdup(yytext);  return CHRLIT; } }
+<CHARSTATE>{SINGLESPLIT}                        { BEGIN 0; if(error == 0) { print_content("CHRLIT",yytext); } else { printf("Line %d, col %d: invalid char constant (%s)\n",curr_line,curr_column,yytext);} column+=yyleng; if (flag == 2) { yylval.tok = create_token(yytext, line, column-yyleng);  return CHRLIT; } }
 <CHARSTATE><<EOF>>                              { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); column+=yyleng; return 0; }
 
 <<EOF>>                                         { column+=yyleng; return 0; }
@@ -152,7 +156,9 @@ int main(int argc, char * argv[])
         }
         if(strcmp(argv[1],"-s") == 0) {
           flag = 2;
+          tree_flag = 1;
           yyparse();
+
           symbols_table = create_table("Global");
           symbols_table->print_flag = 1;
           current_table = symbols_table;
@@ -168,6 +174,13 @@ int main(int argc, char * argv[])
     else {
         flag = 2;
         yyparse();
+
+        symbols_table = create_table("Global");
+        symbols_table->print_flag = 1;
+        current_table = symbols_table;
+
+        create_predefined_functions(symbols_table);
+        read_tree(root);
     }
     yylex_destroy();
     return 0;

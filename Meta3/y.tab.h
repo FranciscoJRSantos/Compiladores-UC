@@ -53,36 +53,36 @@ extern int yydebug;
     SHORT = 263,
     DOUBLE = 264,
     RETURN = 265,
-    VOID = 266,
-    BITWISEAND = 267,
-    BITWISEOR = 268,
-    BITWISEXOR = 269,
-    AND = 270,
-    ASSIGN = 271,
-    MUL = 272,
-    COMMA = 273,
-    DIV = 274,
-    EQ = 275,
-    GE = 276,
-    GT = 277,
-    LBRACE = 278,
-    LE = 279,
-    LPAR = 280,
-    LT = 281,
-    MINUS = 282,
-    MOD = 283,
-    NE = 284,
-    NOT = 285,
-    OR = 286,
-    PLUS = 287,
-    RBRACE = 288,
-    RPAR = 289,
-    SEMI = 290,
-    ID = 291,
-    CHRLIT = 292,
-    REALLIT = 293,
-    RESERVED = 294,
-    INTLIT = 295,
+    BITWISEAND = 266,
+    BITWISEOR = 267,
+    BITWISEXOR = 268,
+    AND = 269,
+    ASSIGN = 270,
+    MUL = 271,
+    COMMA = 272,
+    DIV = 273,
+    EQ = 274,
+    GE = 275,
+    GT = 276,
+    LBRACE = 277,
+    LE = 278,
+    LPAR = 279,
+    LT = 280,
+    MINUS = 281,
+    MOD = 282,
+    NE = 283,
+    NOT = 284,
+    OR = 285,
+    PLUS = 286,
+    RBRACE = 287,
+    RPAR = 288,
+    SEMI = 289,
+    ID = 290,
+    CHRLIT = 291,
+    REALLIT = 292,
+    RESERVED = 293,
+    INTLIT = 294,
+    VOID = 295,
     IFS = 296
   };
 #endif
@@ -95,36 +95,36 @@ extern int yydebug;
 #define SHORT 263
 #define DOUBLE 264
 #define RETURN 265
-#define VOID 266
-#define BITWISEAND 267
-#define BITWISEOR 268
-#define BITWISEXOR 269
-#define AND 270
-#define ASSIGN 271
-#define MUL 272
-#define COMMA 273
-#define DIV 274
-#define EQ 275
-#define GE 276
-#define GT 277
-#define LBRACE 278
-#define LE 279
-#define LPAR 280
-#define LT 281
-#define MINUS 282
-#define MOD 283
-#define NE 284
-#define NOT 285
-#define OR 286
-#define PLUS 287
-#define RBRACE 288
-#define RPAR 289
-#define SEMI 290
-#define ID 291
-#define CHRLIT 292
-#define REALLIT 293
-#define RESERVED 294
-#define INTLIT 295
+#define BITWISEAND 266
+#define BITWISEOR 267
+#define BITWISEXOR 268
+#define AND 269
+#define ASSIGN 270
+#define MUL 271
+#define COMMA 272
+#define DIV 273
+#define EQ 274
+#define GE 275
+#define GT 276
+#define LBRACE 277
+#define LE 278
+#define LPAR 279
+#define LT 280
+#define MINUS 281
+#define MOD 282
+#define NE 283
+#define NOT 284
+#define OR 285
+#define PLUS 286
+#define RBRACE 287
+#define RPAR 288
+#define SEMI 289
+#define ID 290
+#define CHRLIT 291
+#define REALLIT 292
+#define RESERVED 293
+#define INTLIT 294
+#define VOID 295
 #define IFS 296
 
 /* Value type.  */
@@ -132,10 +132,10 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 14 "uccompiler.y" /* yacc.c:1909  */
+#line 17 "uccompiler.y" /* yacc.c:1909  */
 
-char * cval;
-struct no * node;
+  struct token * tok;
+  struct no * node;
 
 #line 141 "y.tab.h" /* yacc.c:1909  */
 };

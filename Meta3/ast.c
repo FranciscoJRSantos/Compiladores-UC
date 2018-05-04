@@ -1,5 +1,18 @@
 #include "functions.h"
 
+token * create_token (char * cval, int line, int column) {
+  token * new = (token *) malloc (sizeof(struct token));
+  if (cval != NULL) {
+    new->cval = strdup(cval);
+  }
+  else {
+    new->cval = NULL;
+  }
+  new->line = line;
+  new->column = column;
+  return new;
+}
+
 node create_node (char* label, char* cval, int n_sons, ...) {
     va_list args;
     va_start(args,n_sons);
@@ -58,7 +71,7 @@ void print_tree(node n, int depth) {
     for (int i = 0; i < depth; i++) 
         printf("..");
             
-    if(n->cval != NULL && n->label != NULL)
+    if(n->cval != NULL && n->label != NULL && n->is_literal == 1)
         printf("%s(%s)",n->label,n->cval);
     else 
         printf("%s",n->label);

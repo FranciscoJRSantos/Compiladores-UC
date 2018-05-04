@@ -156,36 +156,36 @@ INT (262) 29
 SHORT (263) 31
 DOUBLE (264) 32
 RETURN (265) 51
-VOID (266) 30
-BITWISEAND (267) 84
-BITWISEOR (268) 88
-BITWISEXOR (269) 86
-AND (270) 90
-ASSIGN (271) 26 94
-MUL (272) 69
-COMMA (273) 18 24 59 96
-DIV (274) 70
-EQ (275) 81
-GE (276) 79
-GT (277) 77
-LBRACE (278) 9 10 40 41 42
-LE (279) 78
-LPAR (280) 16 48 49 50 56 57 61 62 63
-LT (281) 76
-MINUS (282) 66 74
-MOD (283) 71
-NE (284) 82
-NOT (285) 67
-OR (286) 92
-PLUS (287) 65 73
-RBRACE (288) 9 10 40 41 42
-RPAR (289) 16 48 49 50 56 57 61 62 63
-SEMI (290) 15 22 23 33 45 51
-ID (291) 16 21 26 27 52 61 62 63
-CHRLIT (292) 54
-REALLIT (293) 55
-RESERVED (294)
-INTLIT (295) 53
+BITWISEAND (266) 84
+BITWISEOR (267) 88
+BITWISEXOR (268) 86
+AND (269) 90
+ASSIGN (270) 26 94
+MUL (271) 69
+COMMA (272) 18 24 59 96
+DIV (273) 70
+EQ (274) 81
+GE (275) 79
+GT (276) 77
+LBRACE (277) 9 10 40 41 42
+LE (278) 78
+LPAR (279) 16 48 49 50 56 57 61 62 63
+LT (280) 76
+MINUS (281) 66 74
+MOD (282) 71
+NE (283) 82
+NOT (284) 67
+OR (285) 92
+PLUS (286) 65 73
+RBRACE (287) 9 10 40 41 42
+RPAR (288) 16 48 49 50 56 57 61 62 63
+SEMI (289) 15 22 23 33 45 51
+ID (290) 16 21 26 27 52 61 62 63
+CHRLIT (291) 54
+REALLIT (292) 55
+RESERVED (293)
+INTLIT (294) 53
+VOID (295) 30
 IFS (296)
 
 
@@ -547,7 +547,6 @@ State 23
     SHORT    shift, and go to state 4
     DOUBLE   shift, and go to state 5
     RETURN   shift, and go to state 54
-    VOID     shift, and go to state 6
     LBRACE   shift, and go to state 55
     LPAR     shift, and go to state 28
     MINUS    shift, and go to state 29
@@ -558,6 +557,7 @@ State 23
     CHRLIT   shift, and go to state 33
     REALLIT  shift, and go to state 34
     INTLIT   shift, and go to state 35
+    VOID     shift, and go to state 6
 
     SEMI  reduce using rule 97 (empty)
 
@@ -1021,7 +1021,6 @@ State 58
     SHORT    shift, and go to state 4
     DOUBLE   shift, and go to state 5
     RETURN   shift, and go to state 54
-    VOID     shift, and go to state 6
     LBRACE   shift, and go to state 55
     LPAR     shift, and go to state 28
     MINUS    shift, and go to state 29
@@ -1031,6 +1030,7 @@ State 58
     CHRLIT   shift, and go to state 33
     REALLIT  shift, and go to state 34
     INTLIT   shift, and go to state 35
+    VOID     shift, and go to state 6
 
     RBRACE  reduce using rule 14 (DeclarationsAndStatements)
     SEMI    reduce using rule 97 (empty)
@@ -1084,7 +1084,6 @@ State 60
     SHORT    shift, and go to state 4
     DOUBLE   shift, and go to state 5
     RETURN   shift, and go to state 54
-    VOID     shift, and go to state 6
     LBRACE   shift, and go to state 55
     LPAR     shift, and go to state 28
     MINUS    shift, and go to state 29
@@ -1094,6 +1093,7 @@ State 60
     CHRLIT   shift, and go to state 33
     REALLIT  shift, and go to state 34
     INTLIT   shift, and go to state 35
+    VOID     shift, and go to state 6
 
     RBRACE  reduce using rule 13 (DeclarationsAndStatements)
     SEMI    reduce using rule 97 (empty)

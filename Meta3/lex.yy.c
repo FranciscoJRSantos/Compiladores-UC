@@ -390,20 +390,20 @@ static yyconst flex_int16_t yy_accept[224] =
         4,   42,   32,   18,   39,   45,    1,    5,   45,   44,
         0,   27,   23,   24,   43,   43,   43,   43,   43,   43,
        43,   43,   43,   43,   43,   39,   43,   43,   43,   43,
-       43,   43,    9,   43,   43,   43,   43,   43,   43,   43,
+       43,   43,    8,   43,   43,   43,   43,   43,   43,   43,
 
        43,   43,   43,   43,   34,   49,   48,   47,   47,    3,
         2,    0,    5,   45,    0,   45,   43,   43,   43,   43,
        43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
-       39,   43,   43,   10,   43,   43,   43,   43,   43,   43,
+       39,   43,   43,    9,   43,   43,   43,   43,   43,   43,
        43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
-       47,    0,   45,   43,   43,   43,   43,    6,   43,   43,
-       43,   43,    7,   43,   43,   43,   43,   43,   43,   43,
-       43,   43,   43,   43,   43,   43,   43,   43,   14,   43,
+       47,    0,   45,   43,   43,   43,   43,   10,   43,   43,
+       43,   43,    6,   43,   43,   43,   43,   43,   43,   43,
+       43,   43,   43,   43,   43,   43,   43,   43,   13,   43,
        43,   47,   43,   43,   43,   43,   43,   43,   43,   43,
        43,   43,   11,   43,   43,   43,   43,   43,   43,   43,
 
-       43,    8,   43,   43,   43,   43,   12,   43,   43,   13,
+       43,    7,   43,   43,   43,   43,   12,   43,   43,   14,
        43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
        43,   43,    0
     } ;
@@ -698,12 +698,12 @@ static int yy_more_len = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
 #line 1 "uccompiler.l"
-#line 2 "uccompiler.l"
+#line 3 "uccompiler.l"
+#include "y.tab.h"
+#include "semantics.h"
 #include <stdio.h>
 #include <stdlib.h> 
 #include <string.h>
-#include "y.tab.h"
-#include "semantics.h"
 
 int column = 1;
 int line = 1;
@@ -934,7 +934,7 @@ YY_DECL
 		}
 
 	{
-#line 43 "uccompiler.l"
+#line 44 "uccompiler.l"
 
 #line 940 "lex.yy.c"
 
@@ -1001,277 +1001,277 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 44 "uccompiler.l"
+#line 45 "uccompiler.l"
 { BEGIN MLINECOMMENT; curr_line = line; curr_column = column; column+=yyleng; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 45 "uccompiler.l"
+#line 46 "uccompiler.l"
 { BEGIN 0; column+=yyleng; }
 	YY_BREAK
 case YY_STATE_EOF(MLINECOMMENT):
-#line 46 "uccompiler.l"
+#line 47 "uccompiler.l"
 { BEGIN 0; printf("Line %d, col %d: unterminated comment\n",curr_line,curr_column); column+=yyleng; return 0; }
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 47 "uccompiler.l"
+#line 48 "uccompiler.l"
 { line++; column=1; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 48 "uccompiler.l"
+#line 49 "uccompiler.l"
 { column+=yyleng; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 50 "uccompiler.l"
+#line 51 "uccompiler.l"
 { column+=yyleng; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 52 "uccompiler.l"
-{ column+=yyleng; print_text("CHAR"); if(flag == 2) return CHAR; }
-	YY_BREAK
-case 7:
-YY_RULE_SETUP
 #line 53 "uccompiler.l"
 { column+=yyleng; print_text("ELSE"); if(flag == 2) return ELSE; }
 	YY_BREAK
-case 8:
+case 7:
 YY_RULE_SETUP
 #line 54 "uccompiler.l"
-{ column+=yyleng; print_text("WHILE"); if (flag == 2) return WHILE; }
+{ column+=yyleng; print_text("WHILE"); if (flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng);  return WHILE; } }
+	YY_BREAK
+case 8:
+YY_RULE_SETUP
+#line 55 "uccompiler.l"
+{ column+=yyleng; print_text("IF"); if (flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng); return IF; } }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 55 "uccompiler.l"
-{ column+=yyleng; print_text("IF"); if (flag == 2) return IF; }
+#line 57 "uccompiler.l"
+{ column+=yyleng; print_text("INT"); if (flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng);  return INT; } }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 56 "uccompiler.l"
-{ column+=yyleng; print_text("INT"); if (flag == 2) return INT; }
+#line 58 "uccompiler.l"
+{ column+=yyleng; print_text("CHAR"); if(flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng);  return CHAR; } }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 57 "uccompiler.l"
-{ column+=yyleng; print_text("SHORT"); if (flag == 2) return SHORT; }
+#line 59 "uccompiler.l"
+{ column+=yyleng; print_text("SHORT"); if (flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng); return SHORT; } }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 58 "uccompiler.l"
-{ column+=yyleng; print_text("DOUBLE"); if (flag == 2) return DOUBLE; }
+#line 60 "uccompiler.l"
+{ column+=yyleng; print_text("DOUBLE"); if (flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng);  return DOUBLE; } }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 59 "uccompiler.l"
-{ column+=yyleng; print_text("RETURN"); if (flag == 2) return RETURN; }
+#line 61 "uccompiler.l"
+{ column+=yyleng; print_text("VOID"); if (flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng); return VOID; } }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 60 "uccompiler.l"
-{ column+=yyleng; print_text("VOID"); if (flag == 2) return VOID; }
+#line 62 "uccompiler.l"
+{ column+=yyleng; print_text("RETURN"); if (flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng); return RETURN; } }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 61 "uccompiler.l"
-{ column+=yyleng; print_text("BITWISEAND"); if (flag == 2) return BITWISEAND; }
+#line 64 "uccompiler.l"
+{ column+=yyleng; print_text("BITWISEAND"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return BITWISEAND; }  }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 62 "uccompiler.l"
-{ column+=yyleng; print_text("BITWISEOR");  if (flag == 2) return BITWISEOR; }
+#line 65 "uccompiler.l"
+{ column+=yyleng; print_text("BITWISEOR");  if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return BITWISEOR; } }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 63 "uccompiler.l"
-{ column+=yyleng; print_text("BITWISEXOR"); if (flag == 2) return BITWISEXOR; }
+#line 66 "uccompiler.l"
+{ column+=yyleng; print_text("BITWISEXOR"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return BITWISEXOR; }  }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 64 "uccompiler.l"
-{ column+=yyleng; print_text("AND"); if (flag == 2) return AND;}
+#line 67 "uccompiler.l"
+{ column+=yyleng; print_text("AND"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return AND; } }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 65 "uccompiler.l"
-{ column+=yyleng; print_text("ASSIGN"); if (flag == 2) return ASSIGN; }
+#line 68 "uccompiler.l"
+{ column+=yyleng; print_text("ASSIGN"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return ASSIGN; } }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 66 "uccompiler.l"
-{ column+=yyleng; print_text("MUL"); if (flag == 2) return MUL; }
+#line 69 "uccompiler.l"
+{ column+=yyleng; print_text("MUL"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return MUL; } }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 67 "uccompiler.l"
-{ column+=yyleng; print_text("COMMA"); if (flag == 2) return COMMA; }
+#line 70 "uccompiler.l"
+{ column+=yyleng; print_text("COMMA"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return COMMA; } }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 68 "uccompiler.l"
-{ column+=yyleng; print_text("DIV"); if (flag == 2) return DIV; }
+#line 71 "uccompiler.l"
+{ column+=yyleng; print_text("DIV"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng);  return DIV; } }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 69 "uccompiler.l"
-{ column+=yyleng; print_text("EQ"); if (flag == 2) return EQ; }
+#line 72 "uccompiler.l"
+{ column+=yyleng; print_text("EQ"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return EQ; } }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 70 "uccompiler.l"
-{ column+=yyleng; print_text("GE"); if (flag == 2) return GE; }
+#line 73 "uccompiler.l"
+{ column+=yyleng; print_text("GE"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return GE; } }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 71 "uccompiler.l"
-{ column+=yyleng; print_text("GT"); if (flag == 2) return GT; }
+#line 74 "uccompiler.l"
+{ column+=yyleng; print_text("GT"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return GT; } }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 72 "uccompiler.l"
+#line 76 "uccompiler.l"
 { column+=yyleng; print_text("LBRACE"); if (flag == 2) return LBRACE; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 73 "uccompiler.l"
-{ column+=yyleng; print_text("LE"); if (flag == 2) return LE; }
+#line 77 "uccompiler.l"
+{ column+=yyleng; print_text("LE"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng);  return LE; } }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 74 "uccompiler.l"
-{ column+=yyleng; print_text("LPAR"); if (flag == 2) return LPAR; }
+#line 78 "uccompiler.l"
+{ column+=yyleng; print_text("LPAR"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return LPAR; } }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 75 "uccompiler.l"
-{ column+=yyleng; print_text("LT"); if (flag == 2) return LT; }
+#line 79 "uccompiler.l"
+{ column+=yyleng; print_text("LT"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return LT; } }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 76 "uccompiler.l"
-{ column+=yyleng; print_text("MINUS"); if (flag == 2) return MINUS; }
+#line 80 "uccompiler.l"
+{ column+=yyleng; print_text("MINUS"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng);  return MINUS; } }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 77 "uccompiler.l"
-{ column+=yyleng; print_text("MOD"); if (flag == 2) return MOD; }
+#line 81 "uccompiler.l"
+{ column+=yyleng; print_text("MOD"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng);  return MOD; } }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 78 "uccompiler.l"
-{ column+=yyleng; print_text("NE"); if (flag == 2) return NE; }
+#line 82 "uccompiler.l"
+{ column+=yyleng; print_text("NE"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng);  return NE; } }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 79 "uccompiler.l"
-{ column+=yyleng; print_text("NOT"); if (flag == 2) return NOT; }
+#line 83 "uccompiler.l"
+{ column+=yyleng; print_text("NOT"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return NOT; } }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 80 "uccompiler.l"
-{ column+=yyleng; print_text("OR"); if (flag == 2) return OR; }
+#line 84 "uccompiler.l"
+{ column+=yyleng; print_text("OR"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return OR; } }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 81 "uccompiler.l"
-{ column+=yyleng; print_text("PLUS"); if (flag == 2) return PLUS; }
+#line 85 "uccompiler.l"
+{ column+=yyleng; print_text("PLUS"); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng);  return PLUS; } }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 82 "uccompiler.l"
+#line 86 "uccompiler.l"
 { column+=yyleng; print_text("RBRACE"); if (flag == 2) return RBRACE; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 83 "uccompiler.l"
-{ column+=yyleng; print_text("RPAR"); if (flag == 2) return RPAR; }
+#line 87 "uccompiler.l"
+{ column+=yyleng; print_text("RPAR"); if (flag == 2) {  return RPAR; } }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 84 "uccompiler.l"
-{ column+=yyleng; print_text("SEMI"); if (flag == 2) return SEMI; }
+#line 88 "uccompiler.l"
+{ column+=yyleng; print_text("SEMI"); if (flag == 2) {  return SEMI; } }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 85 "uccompiler.l"
-{ column+=yyleng; print_content("RESERVED", yytext); if (flag == 2) return RESERVED; }
+#line 89 "uccompiler.l"
+{ column+=yyleng; print_content("RESERVED", yytext); if (flag == 2) { yylval.tok = create_token(NULL,line,column-yyleng); return RESERVED; } }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 87 "uccompiler.l"
+#line 91 "uccompiler.l"
 { column+=yyleng; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 88 "uccompiler.l"
+#line 92 "uccompiler.l"
 { column+=yyleng; }
 	YY_BREAK
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-#line 89 "uccompiler.l"
+#line 93 "uccompiler.l"
 { column=1; line++; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 91 "uccompiler.l"
-{ column+=yyleng; print_content("ID",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext); return ID; }}
+#line 95 "uccompiler.l"
+{ column+=yyleng; print_content("ID",yytext); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng); return ID; } }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 92 "uccompiler.l"
-{ column+=yyleng; print_content("INTLIT",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext);  return INTLIT; } }
+#line 96 "uccompiler.l"
+{ column+=yyleng; print_content("INTLIT",yytext); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng);  return INTLIT; } }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 93 "uccompiler.l"
-{ column+=yyleng; print_content("REALLIT",yytext); if (flag == 2) { yylval.cval = (char *) strdup(yytext);  return REALLIT; } }
+#line 97 "uccompiler.l"
+{ column+=yyleng; print_content("REALLIT",yytext); if (flag == 2) { yylval.tok = create_token(yytext,line,column-yyleng);  return REALLIT; } }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 95 "uccompiler.l"
+#line 99 "uccompiler.l"
 { yymore(); BEGIN CHARSTATE; curr_column = column; curr_line = line; error = -1; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 96 "uccompiler.l"
+#line 100 "uccompiler.l"
 { yymore(); error++; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 97 "uccompiler.l"
+#line 101 "uccompiler.l"
 { yymore(); error=1;}
 	YY_BREAK
 case 49:
 /* rule 49 can match eol */
 YY_RULE_SETUP
-#line 98 "uccompiler.l"
+#line 102 "uccompiler.l"
 { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); line++; column=1; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 99 "uccompiler.l"
-{ BEGIN 0; if(error == 0) { print_content("CHRLIT",yytext); } else { printf("Line %d, col %d: invalid char constant (%s)\n",curr_line,curr_column,yytext);} column+=yyleng; if (flag == 2) { yylval.cval = (char*) strdup(yytext);  return CHRLIT; } }
+#line 103 "uccompiler.l"
+{ BEGIN 0; if(error == 0) { print_content("CHRLIT",yytext); } else { printf("Line %d, col %d: invalid char constant (%s)\n",curr_line,curr_column,yytext);} column+=yyleng; if (flag == 2) { yylval.tok = create_token(yytext, line, column-yyleng);  return CHRLIT; } }
 	YY_BREAK
 case YY_STATE_EOF(CHARSTATE):
-#line 100 "uccompiler.l"
+#line 104 "uccompiler.l"
 { BEGIN 0; printf("Line %d, col %d: unterminated char constant\n",curr_line,curr_column); column+=yyleng; return 0; }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 102 "uccompiler.l"
+#line 106 "uccompiler.l"
 { column+=yyleng; return 0; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 103 "uccompiler.l"
+#line 107 "uccompiler.l"
 { printf("Line %d, col %d: illegal character (%s)\n",line,column,yytext); column+=yyleng; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 105 "uccompiler.l"
+#line 109 "uccompiler.l"
 ECHO;
 	YY_BREAK
 #line 1278 "lex.yy.c"
@@ -2267,7 +2267,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 104 "uccompiler.l"
+#line 108 "uccompiler.l"
 
 
 
@@ -2319,7 +2319,9 @@ int main(int argc, char * argv[])
         }
         if(strcmp(argv[1],"-s") == 0) {
           flag = 2;
+          tree_flag = 1;
           yyparse();
+
           symbols_table = create_table("Global");
           symbols_table->print_flag = 1;
           current_table = symbols_table;
@@ -2335,6 +2337,13 @@ int main(int argc, char * argv[])
     else {
         flag = 2;
         yyparse();
+
+        symbols_table = create_table("Global");
+        symbols_table->print_flag = 1;
+        current_table = symbols_table;
+
+        create_predefined_functions(symbols_table);
+        read_tree(root);
     }
     yylex_destroy();
     return 0;
